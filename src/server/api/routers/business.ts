@@ -1,5 +1,10 @@
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from '@/server/api/trpc'
 import { businesses } from '@/server/db/schema'
+import { AnyColumn, asc, desc } from 'drizzle-orm'
 import { z } from 'zod'
 
 export const businessRouter = createTRPCRouter({
@@ -9,6 +14,35 @@ export const businessRouter = createTRPCRouter({
       await ctx.db.insert(businesses).values({
         name: input.name,
         ownerId: ctx.session.user.id,
+      })
+    }),
+
+  find: publicProcedure
+    .input(
+      z.object({
+        orderKey: z.enum(['createdAt']),
+        order: z.enum(['asc', 'desc']),
+        limit: z.number().default(10),
+      }),
+    )
+    .output(
+      z
+        .object({
+          id: z.number(),
+          name: z.string(),
+          description: z.string().nullable(),
+        })
+        .array(),
+    )
+    .query(async ({ ctx, input }) => {
+      const orderFn = input.order === 'asc' ? asc : desc
+      const orderColMap: Record<(typeof input)['orderKey'], AnyColumn> = {
+        createdAt: businesses.createdAt,
+      }
+
+      return await ctx.db.query.businesses.findMany({
+        orderBy: [orderFn(orderColMap[input.orderKey])],
+        limit: input.limit,
       })
     }),
 })
