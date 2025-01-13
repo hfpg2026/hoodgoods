@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  hoodgoods-postgres:
+    image: postgres:latest
+    container_name: hoodgoods-postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=hoodgoods
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - hoodgoods-postgres-volume:/var/lib/postgresql/data
+
+volumes:
+  hoodgoods-postgres-volume:
