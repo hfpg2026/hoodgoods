@@ -17,7 +17,7 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <main className="bg-bg-main flex min-h-screen w-full flex-col gap-2 py-6">
+      <main className="flex min-h-screen w-full flex-col gap-2 bg-bg-main py-6">
         <div className="flex w-full place-content-center">
           <Image
             src="/assets/logo-lg.svg"
@@ -44,7 +44,7 @@ export default async function Home() {
         {/* new businessess */}
         <div className="flex w-full place-content-center pt-4">
           <div className="flex w-9/12 flex-col gap-4">
-            <div className="text-dark-brown font-bold">
+            <div className="font-bold text-dark-brown">
               💖 New Kids on the Block
             </div>
             {businesses.map((b) => (

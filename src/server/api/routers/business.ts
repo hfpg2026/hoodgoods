@@ -4,7 +4,7 @@ import {
   publicProcedure,
 } from '@/server/api/trpc'
 import { businesses } from '@/server/db/schema'
-import { AnyColumn, asc, desc } from 'drizzle-orm'
+import { asc, desc, type AnyColumn } from 'drizzle-orm'
 import { z } from 'zod'
 
 export const businessRouter = createTRPCRouter({

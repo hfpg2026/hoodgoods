@@ -10,7 +10,7 @@ export const BusinessCard = ({
   description: string
 }) => {
   return (
-    <div className="bg-light-brown flex gap-4 rounded-lg shadow-md">
+    <div className="flex gap-4 rounded-lg bg-light-brown shadow-md">
       {profilePic ? (
         <Image src={profilePic} height={24} width={24} alt={name} />
       ) : (
@@ -20,8 +20,8 @@ export const BusinessCard = ({
       )}
 
       <div className="flex flex-col place-content-center">
-        <div className="text-dark-brown font-bold">{name}</div>
-        <div className="text-dark-brown italic">{description}</div>
+        <div className="font-bold text-dark-brown">{name}</div>
+        <div className="italic text-dark-brown">{description}</div>
       </div>
     </div>
   )
