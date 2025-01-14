@@ -76,6 +76,10 @@ export const businesses = createTable(
   (example) => ({
     ownerIdIdx: index('owner_id_idx').on(example.ownerId),
     nameIndex: index('name_idx').on(example.name),
+    searchIndex: index('search_index').using(
+      'gin',
+      sql`${example.description} gin_trgm_ops`,
+    ),
   }),
 )
 

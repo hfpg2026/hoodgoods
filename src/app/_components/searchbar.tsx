@@ -1,13 +1,21 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export const Searchbar = ({
-  onSearch = (s) => console.log(s),
+  onSearch: userSearchFn,
+  initialValue,
 }: {
   onSearch?: (s: string) => void
+  initialValue?: string
 }) => {
-  const [searchTerm, setSearchTerm] = useState('')
+  const router = useRouter()
+  const [searchTerm, setSearchTerm] = useState(initialValue ?? '')
+  const onSearch = userSearchFn
+    ? userSearchFn
+    : (searchTerm: string) => router.push(`/search?search=${searchTerm}`)
+
   return (
     <div className="relative w-full">
       <form onSubmit={() => onSearch(searchTerm)}>

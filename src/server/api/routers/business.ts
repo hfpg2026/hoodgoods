@@ -4,7 +4,7 @@ import {
   publicProcedure,
 } from '@/server/api/trpc'
 import { businesses } from '@/server/db/schema'
-import { asc, desc, type AnyColumn } from 'drizzle-orm'
+import { asc, desc, ilike, or, sql, type AnyColumn } from 'drizzle-orm'
 import { z } from 'zod'
 
 export const businessRouter = createTRPCRouter({
@@ -23,6 +23,8 @@ export const businessRouter = createTRPCRouter({
         orderKey: z.enum(['createdAt']),
         order: z.enum(['asc', 'desc']),
         limit: z.number().default(10),
+        page: z.number().default(1),
+        searchTerm: z.string().optional(),
       }),
     )
     .output(
@@ -40,9 +42,19 @@ export const businessRouter = createTRPCRouter({
         createdAt: businesses.createdAt,
       }
 
-      return await ctx.db.query.businesses.findMany({
-        orderBy: [orderFn(orderColMap[input.orderKey])],
-        limit: input.limit,
-      })
+      return await ctx.db
+        .select()
+        .from(businesses)
+        .where(
+          input.searchTerm
+            ? or(
+                ilike(businesses.description, `%${input.searchTerm}%`),
+                ilike(businesses.name, `%${input.searchTerm}%`),
+              )
+            : undefined,
+        )
+        .orderBy(orderFn(orderColMap[input.orderKey]))
+        .limit(input.limit)
+        .offset((input.page - 1) * input.limit)
     }),
 })
