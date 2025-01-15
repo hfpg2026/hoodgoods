@@ -14,7 +14,7 @@ export const Searchbar = ({
   const [searchTerm, setSearchTerm] = useState(initialValue ?? '')
   const onSearch = userSearchFn
     ? userSearchFn
-    : (searchTerm: string) => router.push(`/search?search=${searchTerm}`)
+    : (searchTerm: string) => router.push(`/search/?search=${searchTerm}`)
 
   return (
     <div className="relative w-full">

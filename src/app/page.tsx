@@ -2,9 +2,8 @@ import Image from 'next/image'
 import { api, HydrateClient } from '@/trpc/server'
 
 import { BusinessCard } from './_components/business-card'
-// import { Navbar } from './_components/navbar'
 import { Searchbar } from './_components/searchbar'
-import { Button } from './_components/ui/button'
+import { Tag } from './_components/tag'
 
 // TODO fetch from db
 export default async function Home() {
@@ -36,9 +35,7 @@ export default async function Home() {
         {/* tags */}
         <div className="flex w-full place-content-center gap-2">
           {tags.map((t) => (
-            <Button outline key={t.id}>
-              {t.name}
-            </Button>
+            <Tag key={t.id} tag={t} />
           ))}
         </div>
         {/* new businessess */}
@@ -47,7 +44,7 @@ export default async function Home() {
             <div className="font-bold text-dark-brown">
               💖 New Kids on the Block
             </div>
-            {businesses.map((b) => (
+            {businesses.map(({ business: b }) => (
               <BusinessCard
                 key={b.id}
                 name={b.name}
