@@ -1,6 +1,7 @@
 import { api } from '@/trpc/server'
 
 import { BusinessCard } from '../_components/business-card'
+import { HeaderLogoLink } from '../_components/logo-link'
 import { Searchbar } from '../_components/searchbar'
 import { Tag } from '../_components/tag'
 
@@ -21,11 +22,12 @@ export default async function Search({
   })
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-2 bg-bg-main pb-6">
+    <main className="flex min-h-screen w-full flex-col gap-2 bg-bg-main pb-6 pt-2">
       {/* header */}
       <div className="relative flex w-full place-content-center">
-        {/* TODO logo */}
-        <div className="absolute left-0 top-2">Hood Goods Logo</div>
+        <div className="absolute left-3 top-4">
+          <HeaderLogoLink />
+        </div>
         <div className="m-auto flex w-9/12 pt-2">
           <Searchbar initialValue={searchTerm} />
         </div>
