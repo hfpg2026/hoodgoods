@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import { relations, sql } from 'drizzle-orm'
 import {
   index,
@@ -15,7 +16,7 @@ import {
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = pgTableCreator((name) => `hoodgoods_${name}`)
+export const createTable = pgTableCreator((name) => name)
 
 export const tags = createTable('tag', {
   id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
