@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { relations, sql } from 'drizzle-orm'
+import { relations, sql, type InferSelectModel } from 'drizzle-orm'
 import {
   index,
   integer,
@@ -55,6 +55,8 @@ export const tagsToBusinessesRelations = relations(
     }),
   }),
 )
+
+export type Tag = InferSelectModel<typeof tags>
 
 // ----- business ------
 export const businesses = createTable(

@@ -2,14 +2,14 @@ import { api } from '@/trpc/server'
 
 import { BusinessCard } from '../_components/business-card'
 import { Searchbar } from '../_components/searchbar'
-import { Button } from '../_components/ui/button'
+import { Tag } from '../_components/tag'
 
 export default async function Search({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | undefined>>
 }) {
-  const searchTerm = (await searchParams).search
+  const { search: searchTerm, tag } = await searchParams
 
   const tags = await api.tag.findAll()
   const businesses = await api.business.find({
@@ -17,6 +17,7 @@ export default async function Search({
     order: 'desc',
     limit: 10,
     searchTerm,
+    tag,
   })
 
   return (
@@ -32,9 +33,7 @@ export default async function Search({
       {/* tags */}
       <div className="flex w-full place-content-center gap-2">
         {tags.map((t) => (
-          <Button outline key={t.id}>
-            {t.name}
-          </Button>
+          <Tag key={t.id} tag={t} />
         ))}
         {/* TODO filter */}
       </div>
@@ -42,7 +41,7 @@ export default async function Search({
       {/* businessess */}
       <div className="flex w-full place-content-center pt-4">
         <div className="flex w-9/12 flex-col gap-4">
-          {businesses.map((b) => (
+          {businesses.map(({ business: b }) => (
             <BusinessCard
               key={b.id}
               name={b.name}

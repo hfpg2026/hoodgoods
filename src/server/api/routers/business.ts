@@ -3,8 +3,8 @@ import {
   protectedProcedure,
   publicProcedure,
 } from '@/server/api/trpc'
-import { businesses } from '@/server/db/schema'
-import { asc, desc, ilike, or, sql, type AnyColumn } from 'drizzle-orm'
+import { businesses, tagsToBusinesses } from '@/server/db/schema'
+import { and, asc, desc, eq, ilike, or, type AnyColumn } from 'drizzle-orm'
 import { z } from 'zod'
 
 export const businessRouter = createTRPCRouter({
@@ -25,14 +25,20 @@ export const businessRouter = createTRPCRouter({
         limit: z.number().default(10),
         page: z.number().default(1),
         searchTerm: z.string().optional(),
+        tag: z
+          .string()
+          .optional()
+          .transform((x) => Number(x)),
       }),
     )
     .output(
       z
         .object({
-          id: z.number(),
-          name: z.string(),
-          description: z.string().nullable(),
+          business: z.object({
+            id: z.number(),
+            name: z.string(),
+            description: z.string().nullable(),
+          }),
         })
         .array(),
     )
@@ -42,19 +48,38 @@ export const businessRouter = createTRPCRouter({
         createdAt: businesses.createdAt,
       }
 
-      return await ctx.db
+      const query = ctx.db
         .select()
         .from(businesses)
         .where(
-          input.searchTerm
-            ? or(
-                ilike(businesses.description, `%${input.searchTerm}%`),
-                ilike(businesses.name, `%${input.searchTerm}%`),
-              )
-            : undefined,
+          and(
+            // search term
+            input.searchTerm
+              ? or(
+                  ilike(businesses.description, `%${input.searchTerm}%`),
+                  ilike(businesses.name, `%${input.searchTerm}%`),
+                )
+              : undefined,
+            // tag
+            input.tag ? eq(tagsToBusinesses.tagId, input.tag) : undefined,
+          ),
         )
         .orderBy(orderFn(orderColMap[input.orderKey]))
         .limit(input.limit)
         .offset((input.page - 1) * input.limit)
+        .$dynamic()
+
+      if (input.tag) {
+        return await query.innerJoin(
+          tagsToBusinesses,
+          eq(tagsToBusinesses.businessId, businesses.id),
+        )
+      }
+
+      // left join to keep data structure constant
+      return await query.leftJoin(
+        tagsToBusinesses,
+        eq(tagsToBusinesses.businessId, businesses.id),
+      )
     }),
 })
