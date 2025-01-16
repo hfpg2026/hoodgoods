@@ -2,6 +2,7 @@ import { type DefaultSession, type NextAuthConfig } from 'next-auth'
 import credentials from 'next-auth/providers/credentials'
 
 import { db } from '../db'
+import { users } from '../db/schema'
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -33,7 +34,7 @@ export const authConfig = {
   providers: [
     credentials({
       id: 'passphrase',
-      name: 'Passphrase',
+      name: 'passphrase',
       credentials: {
         passphrase: {
           label: 'Passphrase',
@@ -49,6 +50,14 @@ export const authConfig = {
           return user ?? null
         }
         return null
+      },
+    }),
+    credentials({
+      id: 'register',
+      name: 'new registration',
+      async authorize() {
+        const user = (await db.insert(users).values({}).returning()).at(0)
+        return user ?? null
       },
     }),
   ],

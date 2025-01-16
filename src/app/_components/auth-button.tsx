@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 'use client'
 
 import { type MouseEventHandler } from 'react'
@@ -42,7 +41,10 @@ export const AuthButton = () => {
       return (
         <div className="flex flex-row gap-2">
           <div className="flex flex-col place-content-center text-sm">
-            <AuthComponentButton onClick={() => {}} transparent={true}>
+            <AuthComponentButton
+              onClick={() => signIn('register')}
+              transparent={true}
+            >
               New Account
             </AuthComponentButton>
           </div>
