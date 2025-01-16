@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import { relations, sql, type InferSelectModel } from 'drizzle-orm'
 import {
   index,
@@ -93,6 +94,9 @@ export const users = createTable('user', {
   id: varchar('id', { length: 255 })
     .notNull()
     .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  passphrase: varchar('passphrase', { length: 255 })
+    .notNull()
     .$defaultFn(() => generatePassphrase({ numbers: false })),
   /* Used for binding to Singpass. Mandatory for biz owners */
   sgid: varchar('sgid', { length: 127 }).unique(),

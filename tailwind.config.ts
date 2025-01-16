@@ -5,6 +5,7 @@ export default {
   content: ['./src/**/*.tsx', './src/**/*.ts'],
   theme: {
     colors: {
+      navbar: '#f7e7d0',
       'bg-main': '#fffaf5',
       'dark-brown': '#794A3A',
       'light-brown': '#f4decb',
