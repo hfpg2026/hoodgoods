@@ -1,5 +1,8 @@
 import { type DefaultSession, type NextAuthConfig } from 'next-auth'
-import DiscordProvider from 'next-auth/providers/discord'
+import credentials from 'next-auth/providers/credentials'
+
+import { db } from '../db'
+import { users } from '../db/schema'
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -28,13 +31,41 @@ declare module 'next-auth' {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authConfig = {
-  providers: [DiscordProvider], // TODO: switch to sms login
+  providers: [
+    credentials({
+      id: 'passphrase',
+      name: 'passphrase',
+      credentials: {
+        passphrase: {
+          label: 'Passphrase',
+          type: 'text',
+          placeholder: 'Eg., correct-horse-battery-staple',
+        },
+      },
+      async authorize({ passphrase }) {
+        if (passphrase && typeof passphrase === 'string') {
+          const user = await db.query.users.findFirst({
+            where: (users, { eq }) => eq(users.passphrase, passphrase),
+          })
+          return user ?? null
+        }
+        return null
+      },
+    }),
+    credentials({
+      id: 'register',
+      name: 'new registration',
+      async authorize() {
+        const user = (await db.insert(users).values({}).returning()).at(0)
+        return user ?? null
+      },
+    }),
+  ],
   callbacks: {
-    session: ({ session, user }) => ({
+    session: ({ session }) => ({
       ...session,
       user: {
         ...session.user,
-        id: user.id,
       },
     }),
   },

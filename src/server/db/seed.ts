@@ -43,6 +43,12 @@ async function main() {
         ownerId,
       },
     ])
+
+    // create user
+    console.log('creating user')
+    await db
+      .insert(schema.users)
+      .values([{ passphrase: 'correct-battery-horse-staple' }])
   } catch (e) {
     console.error(e)
   }

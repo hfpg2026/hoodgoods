@@ -9,6 +9,7 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core'
+import { generate as generatePassphrase } from 'generate-passphrase'
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -94,6 +95,11 @@ export const users = createTable('user', {
     .notNull()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
+  passphrase: varchar('passphrase', { length: 255 })
+    .notNull()
+    .$defaultFn(() => generatePassphrase({ numbers: false })),
+  /* Used for binding to Singpass. Mandatory for biz owners */
+  sgid: varchar('sgid', { length: 127 }).unique(),
   phone: varchar('phone', { length: 255 }).unique(),
   createdAt: timestamp('created_at', { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
