@@ -1,4 +1,3 @@
-import crypto from 'crypto'
 import { relations, sql, type InferSelectModel } from 'drizzle-orm'
 import {
   index,
@@ -9,6 +8,7 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core'
+import { generate as generatePassphrase } from 'generate-passphrase'
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -93,7 +93,9 @@ export const users = createTable('user', {
   id: varchar('id', { length: 255 })
     .notNull()
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+    .$defaultFn(() => generatePassphrase({ numbers: false })),
+  /* Used for binding to Singpass. Mandatory for biz owners */
+  sgid: varchar('sgid', { length: 127 }).unique(),
   phone: varchar('phone', { length: 255 }).unique(),
   createdAt: timestamp('created_at', { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
