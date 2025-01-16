@@ -82,4 +82,29 @@ export const businessRouter = createTRPCRouter({
         eq(tagsToBusinesses.businessId, businesses.id),
       )
     }),
+
+  get: publicProcedure
+    .input(
+      z.object({
+        id: z.string().transform((x) => Number(x)),
+      }),
+    )
+    .output(
+      z
+        .object({
+          id: z.number(),
+          name: z.string(),
+          description: z.string().nullable(),
+          tagsToBusinesses: z
+            .object({ tag: z.object({ id: z.number(), name: z.string() }) })
+            .array(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.query.businesses.findFirst({
+        where: eq(businesses.id, input.id),
+        with: { tagsToBusinesses: { with: { tag: true } } },
+      })
+    }),
 })

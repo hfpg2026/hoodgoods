@@ -1,16 +1,25 @@
+'use client'
+
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 export const BusinessCard = ({
+  id,
   profilePic,
   name,
   description,
 }: {
+  id: number
   profilePic?: string
   name: string
   description: string
 }) => {
+  const router = useRouter()
   return (
-    <div className="flex gap-4 rounded-lg bg-light-brown shadow-md">
+    <div
+      className="flex cursor-pointer gap-4 rounded-lg bg-light-brown shadow-md"
+      onClick={() => router.push(`/biz/${id}`)}
+    >
       {profilePic ? (
         <Image src={profilePic} height={24} width={24} alt={name} />
       ) : (

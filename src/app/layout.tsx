@@ -4,7 +4,7 @@ import { type Metadata } from 'next'
 import { TRPCReactProvider } from '@/trpc/react'
 import { GeistSans } from 'geist/font/sans'
 
-import { GovtBanner } from './_components/govt-banner'
+import { HackathonBanner } from './_components/hackathon-banner'
 
 export const metadata: Metadata = {
   title: 'Create T3 App',
@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-        <GovtBanner />
+        <HackathonBanner />
         <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>
     </html>

@@ -1,8 +1,7 @@
 import { api } from '@/trpc/server'
 
 import { BusinessCard } from '../_components/business-card'
-import { HeaderLogoLink } from '../_components/logo-link'
-import { Searchbar } from '../_components/searchbar'
+import { Navbar } from '../_components/navbar'
 import { Tag } from '../_components/tag'
 
 export default async function Search({
@@ -23,15 +22,7 @@ export default async function Search({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-2 bg-bg-main pb-6 pt-2">
-      {/* header */}
-      <div className="relative flex w-full place-content-center">
-        <div className="absolute left-3 top-4">
-          <HeaderLogoLink />
-        </div>
-        <div className="m-auto flex w-9/12 pt-2">
-          <Searchbar initialValue={searchTerm} />
-        </div>
-      </div>
+      <Navbar initialSearch={searchTerm} />
       {/* tags */}
       <div className="flex w-full place-content-center gap-2">
         {tags.map((t) => (
@@ -46,6 +37,7 @@ export default async function Search({
           {businesses.map(({ business: b }) => (
             <BusinessCard
               key={b.id}
+              id={b.id}
               name={b.name}
               description={b.description ?? ''}
             />
