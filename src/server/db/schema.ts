@@ -37,9 +37,7 @@ export const tagsToBusinesses = createTable(
       .notNull()
       .references(() => businesses.id),
   },
-  (tb) => ({
-    pk: primaryKey({ columns: [tb.tagId, tb.businessId] }),
-  }),
+  (tb) => [primaryKey({ columns: [tb.tagId, tb.businessId] })],
 )
 
 export const tagsToBusinessesRelations = relations(
@@ -75,14 +73,14 @@ export const businesses = createTable(
       () => new Date(),
     ),
   },
-  (example) => ({
-    ownerIdIdx: index('owner_id_idx').on(example.ownerId),
-    nameIndex: index('name_idx').on(example.name),
-    searchIndex: index('search_index').using(
+  (example) => [
+    index('owner_id_idx').on(example.ownerId),
+    index('name_idx').on(example.name),
+    index('search_index').using(
       'gin',
       sql`${example.description} gin_trgm_ops`,
     ),
-  }),
+  ],
 )
 
 export const businessRelations = relations(businesses, ({ one, many }) => ({

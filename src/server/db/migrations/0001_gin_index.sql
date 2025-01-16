@@ -1,1 +1,0 @@
-CREATE INDEX "search_index" ON "hoodgoods_business" USING gin ("description" gin_trgm_ops);
