@@ -1,12 +1,10 @@
 import '@/styles/globals.css'
 
 import { type Metadata } from 'next'
-import Image from 'next/image'
 import { TRPCReactProvider } from '@/trpc/react'
 import { GeistSans } from 'geist/font/sans'
 import { SessionProvider } from 'next-auth/react'
 
-import { AuthButton } from './_components/auth-button'
 import { HackathonBanner } from './_components/hackathon-banner'
 
 export const metadata: Metadata = {
@@ -23,18 +21,6 @@ export default function RootLayout({
       <body>
         <HackathonBanner />
         <SessionProvider>
-          <div className="bg-navbar">
-            <div className="flex w-full justify-between p-2 pb-1 sm:p-3 sm:pb-2">
-              <Image
-                src="/assets/logo-header.svg"
-                width={230}
-                height={35}
-                alt="Hood Goods Header"
-                priority
-              />
-              <AuthButton />
-            </div>
-          </div>
           <TRPCReactProvider>{children}</TRPCReactProvider>
         </SessionProvider>
       </body>

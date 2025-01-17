@@ -43,14 +43,6 @@ export default async function Business({
             ))}
           </div>
 
-          {/* story */}
-          <div className="flex flex-col gap-2">
-            <div className="text-lg font-bold text-dark-brown">
-              📖 Our Story
-            </div>
-            <div>Some story here yay</div>
-          </div>
-
           {/* product highlights */}
           <div className="flex flex-col gap-2">
             <div className="text-lg font-bold text-dark-brown">
