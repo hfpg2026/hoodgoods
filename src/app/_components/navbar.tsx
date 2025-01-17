@@ -3,14 +3,15 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
+import { AuthButton } from './auth-button'
 import { Searchbar } from './searchbar'
 
 export const Navbar = ({ initialSearch }: { initialSearch?: string }) => {
   const router = useRouter()
 
   return (
-    <div className="relative flex w-full place-content-center">
-      <div className="absolute left-3 top-4">
+    <div className="flex w-full items-center justify-between px-3 pt-2">
+      <div>
         <Image
           src="/assets/logo-header.svg"
           width={150}
@@ -21,8 +22,11 @@ export const Navbar = ({ initialSearch }: { initialSearch?: string }) => {
           className="cursor-pointer"
         />
       </div>
-      <div className="m-auto flex w-9/12 pt-2">
+      <div className="m-auto flex w-9/12">
         <Searchbar initialValue={initialSearch} />
+      </div>
+      <div>
+        <AuthButton />
       </div>
     </div>
   )
