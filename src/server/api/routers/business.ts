@@ -3,9 +3,25 @@ import {
   protectedProcedure,
   publicProcedure,
 } from '@/server/api/trpc'
-import { businesses, tagsToBusinesses } from '@/server/db/schema'
+import {
+  businesses,
+  businessSchema,
+  tagsToBusinesses,
+  type Business,
+} from '@/server/db/schema'
 import { and, asc, desc, eq, ilike, or, type AnyColumn } from 'drizzle-orm'
 import { z } from 'zod'
+
+const bizUpdateSchema = z.object({
+  id: z.number(),
+  name: z
+    .string()
+    .min(1, { message: 'Business name has to be at least 1 character long' }),
+  description: z.string().optional(),
+  story: z.string().optional(),
+  links: z.string().array().optional(),
+})
+export type BizUpdateType = z.infer<typeof bizUpdateSchema>
 
 export const businessRouter = createTRPCRouter({
   create: protectedProcedure
@@ -15,6 +31,15 @@ export const businessRouter = createTRPCRouter({
         name: input.name,
         ownerId: ctx.session.user.id,
       })
+    }),
+
+  update: protectedProcedure
+    .input(bizUpdateSchema)
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(businesses)
+        .set({ name: input.name, description: input.description })
+        .where(eq(businesses.id, input.id))
     }),
 
   find: publicProcedure
@@ -89,22 +114,12 @@ export const businessRouter = createTRPCRouter({
         id: z.string().transform((x) => Number(x)),
       }),
     )
-    .output(
-      z
-        .object({
-          id: z.number(),
-          name: z.string(),
-          description: z.string().nullable(),
-          tagsToBusinesses: z
-            .object({ tag: z.object({ id: z.number(), name: z.string() }) })
-            .array(),
-        })
-        .optional(),
-    )
+    .output(businessSchema.optional())
     .query(async ({ ctx, input }) => {
-      return await ctx.db.query.businesses.findFirst({
+      const biz = await ctx.db.query.businesses.findFirst({
         where: eq(businesses.id, input.id),
         with: { tagsToBusinesses: { with: { tag: true } } },
       })
+      return biz ? { ...biz, links: biz.links as Business['links'] } : biz
     }),
 })

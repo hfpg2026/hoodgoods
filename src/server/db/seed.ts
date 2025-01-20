@@ -13,7 +13,7 @@ async function main() {
     console.log('creating user')
     const user = await db
       .insert(schema.users)
-      .values({ phone: '91074896' }) // jasmine
+      .values([{ passphrase: 'correct-battery-horse-staple' }])
       .returning()
     const ownerId = user[0]!.id
 
@@ -43,12 +43,6 @@ async function main() {
         ownerId,
       },
     ])
-
-    // create user
-    console.log('creating user')
-    await db
-      .insert(schema.users)
-      .values([{ passphrase: 'correct-battery-horse-staple' }])
   } catch (e) {
     console.error(e)
   }
