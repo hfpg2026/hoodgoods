@@ -9,8 +9,9 @@ export default async function BizProfile({
 }) {
   const bizId = (await params).id
   const biz = await api.business.get({ id: bizId })
-
   if (!biz) notFound()
 
-  return <BizProfilePage biz={biz} />
+  const tagList = await api.tag.findAll()
+
+  return <BizProfilePage biz={biz} tagList={tagList} />
 }

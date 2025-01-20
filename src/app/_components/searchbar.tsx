@@ -20,7 +20,7 @@ export const Searchbar = ({
     <div className="relative w-full">
       <form onSubmit={() => onSearch(searchTerm)}>
         <input
-          className="focus:shadow-outline h-10 w-full rounded-lg border border-dark-brown pl-3 pr-8 text-base"
+          className="focus:shadow-outline h-10 w-full rounded-lg border border-primary pl-3 pr-8 text-base"
           type="text"
           placeholder="Find your 'hood good"
           value={searchTerm}

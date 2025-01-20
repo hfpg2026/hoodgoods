@@ -17,7 +17,7 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <main className="flex min-h-screen w-full flex-col gap-2 bg-bg-main pb-6 pt-2">
+      <main className="flex min-h-screen w-full flex-col gap-2 bg-background pb-6 pt-2">
         <div className="flex w-full items-center justify-end px-6">
           <AuthButton />
         </div>
@@ -45,7 +45,7 @@ export default async function Home() {
         {/* new businessess */}
         <div className="flex w-full place-content-center pt-4">
           <div className="flex w-9/12 flex-col gap-4">
-            <div className="text-lg font-bold text-dark-brown">
+            <div className="text-lg font-bold text-primary">
               💖 New Kids on the Block
             </div>
             {businesses.map(({ business: b }) => (

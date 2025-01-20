@@ -3,7 +3,6 @@ import { relations, sql, type InferSelectModel } from 'drizzle-orm'
 import {
   index,
   integer,
-  jsonb,
   pgTableCreator,
   primaryKey,
   text,
@@ -102,6 +101,7 @@ export const businessSchema = z.object({
   description: z.string().nullable(),
   story: z.string().nullable(),
   links: z.string().array(),
+  ownerId: z.string().optional(),
   tagsToBusinesses: z // relations
     .object({ tag: z.object({ id: z.number(), name: z.string() }) })
     .array()

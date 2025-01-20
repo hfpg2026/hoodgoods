@@ -7,8 +7,8 @@ import {
   businesses,
   businessSchema,
   tagsToBusinesses,
-  type Business,
 } from '@/server/db/schema'
+import { TRPCError } from '@trpc/server'
 import { and, asc, desc, eq, ilike, or, type AnyColumn } from 'drizzle-orm'
 import { z } from 'zod'
 
@@ -20,6 +20,7 @@ const bizUpdateSchema = z.object({
   description: z.string().optional(),
   story: z.string().optional(),
   links: z.string().array().optional(),
+  tags: z.number().array().optional(),
 })
 export type BizUpdateType = z.infer<typeof bizUpdateSchema>
 
@@ -36,10 +37,40 @@ export const businessRouter = createTRPCRouter({
   update: protectedProcedure
     .input(bizUpdateSchema)
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .update(businesses)
-        .set({ name: input.name, description: input.description })
-        .where(eq(businesses.id, input.id))
+      await ctx.db.transaction(async (tx) => {
+        // safety check ownerId = userId
+        const biz = await tx
+          .select()
+          .from(businesses)
+          .where(
+            and(
+              eq(businesses.id, input.id),
+              eq(businesses.ownerId, ctx.session.user.id),
+            ),
+          )
+        if (biz.length === 0) {
+          throw new TRPCError({
+            message: 'Business not found',
+            code: 'NOT_FOUND',
+          })
+        }
+
+        await tx
+          .update(businesses)
+          .set({
+            name: input.name,
+            description: input.description,
+            story: input.story,
+            links: input.links,
+          })
+          .where(eq(businesses.id, input.id))
+
+        // delete removed tags
+        await tx
+          .delete(tagsToBusinesses)
+          .where(eq(tagsToBusinesses.businessId, input.id))
+        // set new tags
+      })
     }),
 
   find: publicProcedure
@@ -112,14 +143,18 @@ export const businessRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string().transform((x) => Number(x)),
+        ownerId: z.string().optional(),
       }),
     )
     .output(businessSchema.optional())
     .query(async ({ ctx, input }) => {
       const biz = await ctx.db.query.businesses.findFirst({
-        where: eq(businesses.id, input.id),
+        where: and(
+          eq(businesses.id, input.id),
+          input.ownerId ? eq(businesses.ownerId, input.ownerId) : undefined,
+        ),
         with: { tagsToBusinesses: { with: { tag: true } } },
       })
-      return biz ? { ...biz, links: biz.links as Business['links'] } : biz
+      return biz ? { ...biz, links: biz.links } : biz
     }),
 })

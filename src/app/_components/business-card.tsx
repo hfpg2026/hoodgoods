@@ -17,7 +17,7 @@ export const BusinessCard = ({
   const router = useRouter()
   return (
     <div
-      className="flex cursor-pointer gap-4 rounded-lg bg-light-brown shadow-md"
+      className="flex cursor-pointer gap-4 rounded-lg bg-accent shadow-md"
       onClick={() => router.push(`/biz/${id}`)}
     >
       {profilePic ? (
@@ -29,8 +29,8 @@ export const BusinessCard = ({
       )}
 
       <div className="flex flex-col place-content-center">
-        <div className="font-bold text-dark-brown">{name}</div>
-        <div className="italic text-dark-brown">{description}</div>
+        <div className="font-bold text-primary">{name}</div>
+        <div className="italic text-primary">{description}</div>
       </div>
     </div>
   )

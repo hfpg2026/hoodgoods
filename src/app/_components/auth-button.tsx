@@ -14,10 +14,10 @@ const AuthComponentButton = ({
 }) => (
   <div
     onClick={onClick}
-    className={`flex gap-4 rounded-md ${transparent ? '' : 'bg-light-brown'} p-1`}
+    className={`flex gap-4 rounded-md ${transparent ? '' : 'bg-accent'} p-1`}
   >
     <div className="flex cursor-pointer flex-col place-content-center">
-      <div className="text-dark-brown">{children}</div>
+      <div className="text-primary">{children}</div>
     </div>
   </div>
 )
@@ -33,7 +33,7 @@ export const AuthButton = () => {
       )
     case 'loading':
       return (
-        <div className="flex flex-col place-content-center text-dark-brown">
+        <div className="flex flex-col place-content-center text-primary">
           Loading...
         </div>
       )

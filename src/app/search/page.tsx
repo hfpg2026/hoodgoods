@@ -21,7 +21,7 @@ export default async function Search({
   })
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-2 bg-bg-main pb-6 pt-2">
+    <main className="flex min-h-screen w-full flex-col gap-2 pb-6 pt-2">
       <Navbar initialSearch={searchTerm} />
       {/* tags */}
       <div className="flex w-full place-content-center gap-2">

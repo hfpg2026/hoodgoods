@@ -2,53 +2,96 @@
 
 import { useCallback } from 'react'
 import Image from 'next/image'
-import { notFound, useParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import {
   DescriptionField,
-  EditableField,
+  LinkField,
   NameField,
   StoryField,
+  TagsField,
 } from '@/app/_components/biz-profile/form-fields'
-import { Link } from '@/app/_components/biz-profile/link'
 import { ProductCard } from '@/app/_components/biz-profile/product-card'
 import { Navbar } from '@/app/_components/navbar'
-import { Tag } from '@/app/_components/tag'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
+import { useToast } from '@/hooks/use-toast'
 import { type BizUpdateType } from '@/server/api/routers/business'
-import { Business } from '@/server/db/schema'
+import { type Business, type Tag } from '@/server/db/schema'
 import { api } from '@/trpc/react'
+import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 
 export const BizProfilePage = ({
   biz,
+  tagList,
   isEdit,
 }: {
   biz: Business
+  tagList: Tag[]
   isEdit?: boolean
 }) => {
+  const { data: session } = useSession()
+  const router = useRouter()
+
   const form = useForm<BizUpdateType>({
     defaultValues: {
       id: biz.id,
       name: biz.name,
       description: biz.description ?? undefined,
+      links: biz.links,
+      story: biz.story ?? undefined,
+      tags: biz.tagsToBusinesses.map((ttb) => ttb.tag.id),
     },
   })
-  const { control, getValues } = form
+  const { control, watch, getValues, setValue } = form
+  const linksLocal = watch('links')
+  const tagsLocal = watch('tags')
 
-  const { mutate, error } = api.business.update.useMutation()
+  const { toast } = useToast()
+  const { mutate } = api.business.update.useMutation({
+    onSuccess: () => {
+      toast({ description: 'Updated profile successfully' })
+    },
+    onError: (err) => {
+      toast({
+        description: `Failed to update profile due to ${err.message}`,
+        variant: 'destructive',
+      })
+    },
+  })
   const onSubmit = useCallback(async () => {
-    void mutate({ ...getValues(), id: biz.id })
-  }, [])
+    mutate({ ...getValues(), id: biz.id })
+  }, [biz.id, getValues, mutate])
 
   return (
-    <main className="bg-bg-main flex min-h-screen w-full flex-col gap-2 pb-6">
-      <Navbar />
+    <main className="flex min-h-screen w-full flex-col gap-2 pb-6">
+      <Navbar showSearch={false} />
+      {isEdit && (
+        <div className="flex w-full justify-between px-4">
+          <div>✏️ You&apos;re currently editing this business page.</div>
+          <div className="flex gap-2">
+            <Button onClick={onSubmit}>Save</Button>
+            <Button
+              variant="destructive"
+              onClick={() => router.push(`/biz/${biz.id}`)}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
+      {!isEdit && biz.ownerId === session?.user.id && (
+        <div className="flex w-full justify-end px-4">
+          <Button onClick={() => router.push(`/biz/${biz.id}/edit`)}>
+            Edit
+          </Button>
+        </div>
+      )}
       <div className="flex w-full place-content-center pt-4">
         <div className="flex w-9/12 flex-col gap-6">
           <Form {...form}>
             {/* biz header */}
-            <div className="flex w-full justify-between">
+            <div className="flex w-full justify-between gap-8">
               <div className="flex w-full gap-8">
                 {/* logo */}
                 <Image
@@ -74,22 +117,27 @@ export const BizProfilePage = ({
 
               {/* links */}
               <div className="flex min-w-56 flex-col gap-1 self-center">
-                {biz.links.map((l, idx) => (
-                  <Link key={idx} href={l} />
-                ))}
-                {isEdit && <Button>🔗 Add Link</Button>}
+                <LinkField
+                  isEdit={isEdit}
+                  values={linksLocal ?? []}
+                  setValue={setValue}
+                />
               </div>
             </div>
+
+            {/* tags */}
             <div className="flex w-full gap-4">
-              {biz.tagsToBusinesses?.map(({ tag }) => (
-                <Tag key={tag.id} tag={tag} />
-              ))}
-              {isEdit && <Button>🏷️ Add Tag</Button>}
+              <TagsField
+                isEdit={isEdit}
+                tagList={tagList}
+                values={tagsLocal ?? []}
+                setValue={setValue}
+              />
             </div>
 
             {/* product highlights */}
             <div className="flex flex-col gap-2">
-              <div className="text-primary text-lg font-bold">
+              <div className="text-lg font-bold text-primary">
                 🌈 Product Highlights
               </div>
               <div className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
@@ -119,9 +167,9 @@ export const BizProfilePage = ({
             </div>
 
             {/* story */}
-            {(biz.story || isEdit) && (
+            {(biz.story ?? isEdit) && (
               <div className="flex flex-col gap-2">
-                <div className="text-primary text-lg font-bold">
+                <div className="text-lg font-bold text-primary">
                   📖 Our Story
                 </div>
                 <StoryField

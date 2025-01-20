@@ -6,7 +6,13 @@ import { useRouter } from 'next/navigation'
 import { AuthButton } from './auth-button'
 import { Searchbar } from './searchbar'
 
-export const Navbar = ({ initialSearch }: { initialSearch?: string }) => {
+export const Navbar = ({
+  initialSearch,
+  showSearch = true,
+}: {
+  initialSearch?: string
+  showSearch?: boolean
+}) => {
   const router = useRouter()
 
   return (
@@ -23,7 +29,7 @@ export const Navbar = ({ initialSearch }: { initialSearch?: string }) => {
         />
       </div>
       <div className="m-auto flex w-9/12">
-        <Searchbar initialValue={initialSearch} />
+        {showSearch && <Searchbar initialValue={initialSearch} />}
       </div>
       <div>
         <AuthButton />
