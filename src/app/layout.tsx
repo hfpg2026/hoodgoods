@@ -1,6 +1,7 @@
 import '@/styles/globals.css'
 
 import { type Metadata } from 'next'
+import { Toaster } from '@/components/ui/toaster'
 import { TRPCReactProvider } from '@/trpc/react'
 import { GeistSans } from 'geist/font/sans'
 import { SessionProvider } from 'next-auth/react'
@@ -21,7 +22,10 @@ export default function RootLayout({
       <body>
         <HackathonBanner />
         <SessionProvider>
-          <TRPCReactProvider>{children}</TRPCReactProvider>
+          <TRPCReactProvider>
+            {children}
+            <Toaster />
+          </TRPCReactProvider>
         </SessionProvider>
       </body>
     </html>

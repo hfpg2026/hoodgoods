@@ -10,6 +10,7 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core'
 import { generatePassphrase } from 'niceware'
+import { z } from 'zod'
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -64,6 +65,11 @@ export const businesses = createTable(
     id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
     name: varchar('name', { length: 255 }).notNull(),
     description: text('description'),
+    links: text('links')
+      .array()
+      .notNull()
+      .default(sql`'{}'::text[]`),
+    story: text('story'),
     ownerId: varchar('owner_id', { length: 255 })
       .notNull()
       .references(() => users.id),
@@ -88,6 +94,20 @@ export const businessRelations = relations(businesses, ({ one, many }) => ({
   user: one(users, { fields: [businesses.ownerId], references: [users.id] }),
   tagsToBusinesses: many(tagsToBusinesses),
 }))
+
+export const businessSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string().nullable(),
+  story: z.string().nullable(),
+  links: z.string().array(),
+  ownerId: z.string().optional(),
+  tagsToBusinesses: z // relations
+    .object({ tag: z.object({ id: z.number(), name: z.string() }) })
+    .array()
+    .default([]),
+})
+export type Business = z.infer<typeof businessSchema>
 
 // ----- user -----
 export const users = createTable('user', {

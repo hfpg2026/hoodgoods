@@ -2,9 +2,8 @@
 
 import { useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { Button } from '@/components/ui/button'
 import { type Tag as TagType } from '@/server/db/schema'
-
-import { Button } from './ui/button'
 
 export const Tag = ({ tag }: { tag: TagType }) => {
   const router = useRouter()
@@ -23,8 +22,7 @@ export const Tag = ({ tag }: { tag: TagType }) => {
 
   return (
     <Button
-      outline
-      isActive={isActive}
+      variant={isActive ? undefined : 'outline'}
       onClick={() =>
         router.push(`/search/?${createQueryString('tag', tag.id.toString())}`)
       }
