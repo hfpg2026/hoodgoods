@@ -3,6 +3,36 @@
 import { type MouseEventHandler } from 'react'
 import { signIn, signOut, useSession } from 'next-auth/react'
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu'
+
+const SignOutButton = ({
+  onSignOut,
+  passphrase,
+}: {
+  onSignOut?: MouseEventHandler<HTMLDivElement>
+  passphrase: string
+}) => (
+  <DropdownMenu>
+    <DropdownMenuTrigger className="rounded-md bg-light-brown px-3 py-2">
+      &#9776;
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end">
+      <DropdownMenuLabel>{passphrase}</DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem className="cursor-pointer" onClick={onSignOut}>
+        Sign Out
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+)
+
 const AuthComponentButton = ({
   onClick,
   transparent,
@@ -27,9 +57,10 @@ export const AuthButton = () => {
   switch (session.status) {
     case 'authenticated':
       return (
-        <AuthComponentButton onClick={() => signOut()}>
-          Sign Out
-        </AuthComponentButton>
+        <SignOutButton
+          onSignOut={() => signOut()}
+          passphrase={session.data.user.passphrase}
+        />
       )
     case 'loading':
       return (
