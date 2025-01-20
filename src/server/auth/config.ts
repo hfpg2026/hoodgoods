@@ -1,4 +1,4 @@
-import { type DefaultSession, type NextAuthConfig } from 'next-auth'
+import { type DefaultSession, type NextAuthConfig, type User } from 'next-auth'
 import credentials from 'next-auth/providers/credentials'
 
 import { db } from '../db'
@@ -14,8 +14,7 @@ declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string
-      // ...other properties
-      // role: UserRole;
+      passphrase: string
     } & DefaultSession['user']
   }
 
@@ -62,11 +61,18 @@ export const authConfig = {
     }),
   ],
   callbacks: {
-    session: ({ session }) => ({
-      ...session,
-      user: {
-        ...session.user,
-      },
-    }),
+    jwt({ user, token }) {
+      if (user) {
+        token.user = user
+      }
+      return token
+    },
+    session: ({ session, token }) => {
+      return {
+        ...session,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        user: token.user as User,
+      }
+    },
   },
 } satisfies NextAuthConfig
