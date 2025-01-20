@@ -65,7 +65,7 @@ export const BizProfilePage = ({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-2 pb-6">
-      <Navbar showSearch={false} />
+      <Navbar showSearch={!isEdit} />
       {isEdit && (
         <div className="flex w-full justify-between px-4">
           <div>✏️ You&apos;re currently editing this business page.</div>
