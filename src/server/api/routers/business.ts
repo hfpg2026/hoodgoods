@@ -19,7 +19,7 @@ const bizUpdateSchema = z.object({
     .min(1, { message: 'Business name has to be at least 1 character long' }),
   description: z.string().optional(),
   story: z.string().optional(),
-  links: z.string().array().optional(),
+  links: z.string().url().array().optional(),
   tags: z.number().array().optional(),
 })
 export type BizUpdateType = z.infer<typeof bizUpdateSchema>
