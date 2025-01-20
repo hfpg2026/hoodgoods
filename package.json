@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "next build",
+    "build": "dotenv -c ${ENV:-'development'} -- next build",
     "check": "next lint && tsc --noEmit",
     "db:generate": "dotenv -c ${ENV:-'development'} -- drizzle-kit generate",
     "db:migrate": "dotenv -c ${ENV:-'development'} -- drizzle-kit migrate",
@@ -82,6 +82,9 @@
     "tailwindcss": "^3.4.3",
     "tsx": "^4.19.2",
     "typescript": "^5.5.3"
+  },
+  "optionalDependencies": {
+    "@esbuild/linux-x64": "0.24.0"
   },
   "ct3aMetadata": {
     "initVersion": "7.38.1"
