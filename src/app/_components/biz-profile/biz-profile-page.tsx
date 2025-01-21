@@ -1,11 +1,11 @@
 'use client'
 
 import { useCallback } from 'react'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import {
   DescriptionField,
   LinkField,
+  LogoField,
   NameField,
   StoryField,
   TagsField,
@@ -94,12 +94,12 @@ export const BizProfilePage = ({
             <div className="flex w-full justify-between gap-8">
               <div className="flex w-full gap-8">
                 {/* logo */}
-                <Image
-                  src="/assets/paperbag.svg"
-                  height={96}
-                  width={96}
-                  alt="paperbag"
+                <LogoField
+                  isEdit={isEdit}
+                  bizId={biz.id}
+                  uploadId={biz.logoId}
                 />
+
                 {/* name & description */}
                 <div className="flex w-full flex-col gap-2 self-center">
                   <NameField

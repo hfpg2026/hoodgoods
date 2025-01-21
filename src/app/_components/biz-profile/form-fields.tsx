@@ -1,4 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -22,11 +23,13 @@ import { MultiSelect } from '@/components/ui/multiselect'
 import { Textarea } from '@/components/ui/textarea'
 import { type BizUpdateType } from '@/server/api/routers/business'
 import { type Tag as TagType } from '@/server/db/schema'
+import { api } from '@/trpc/react'
 import _ from 'lodash'
 import { type Control, type UseFormSetValue } from 'react-hook-form'
 
 import { Tag } from '../tag'
 import { Link } from './link'
+import { UploadButton } from './upload-button'
 
 type FieldPropTypes = {
   isEdit?: boolean
@@ -245,6 +248,41 @@ export const TagsField = ({
           </DialogContent>
         </Dialog>
       )}
+    </div>
+  )
+}
+
+export const LogoField = ({
+  isEdit,
+  bizId,
+  uploadId: initialUploadId,
+}: {
+  isEdit?: boolean
+  bizId: number
+  uploadId?: number | null
+}) => {
+  const [uploadId, setUploadId] = useState(initialUploadId)
+  const { data: imageSrc } = api.upload.get.useQuery(
+    {
+      id: uploadId ?? 0, // should not run
+      businessId: bizId,
+    },
+    { enabled: !!uploadId },
+  )
+
+  const src = imageSrc ? imageSrc.url : '/assets/paperbag.svg'
+  return (
+    <div className="max-w-50 group relative">
+      <Image
+        className="w-full group-hover:opacity-30"
+        src={src}
+        width={96}
+        height={96}
+        alt="logo"
+      />
+      <div className="align-center absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] opacity-0 group-hover:opacity-100">
+        {isEdit && <UploadButton bizId={bizId} onUpload={setUploadId} />}
+      </div>
     </div>
   )
 }

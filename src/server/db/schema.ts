@@ -20,6 +20,24 @@ import { z } from 'zod'
  */
 export const createTable = pgTableCreator((name) => name)
 
+// ----- uploads -----
+export const uploads = createTable(
+  'uploads',
+  {
+    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
+    name: varchar('name', { length: 255 }).notNull(),
+    sizeInBytes: integer('sizeInBytes').notNull(),
+    s3ObjectKey: text('s3ObjectKey').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (_) => [],
+)
+
+export type Upload = InferSelectModel<typeof uploads>
+
+// ----- tag -----
 export const tags = createTable('tag', {
   id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
   name: varchar('name', { length: 255 }).notNull(),
@@ -70,6 +88,7 @@ export const businesses = createTable(
       .notNull()
       .default(sql`'{}'::text[]`),
     story: text('story'),
+    logoId: integer('logo_id').references(() => uploads.id),
     ownerId: varchar('owner_id', { length: 255 })
       .notNull()
       .references(() => users.id),
@@ -93,6 +112,7 @@ export const businesses = createTable(
 export const businessRelations = relations(businesses, ({ one, many }) => ({
   user: one(users, { fields: [businesses.ownerId], references: [users.id] }),
   tagsToBusinesses: many(tagsToBusinesses),
+  logo: one(uploads, { fields: [businesses.logoId], references: [uploads.id] }),
 }))
 
 export const businessSchema = z.object({
@@ -106,6 +126,7 @@ export const businessSchema = z.object({
     .object({ tag: z.object({ id: z.number(), name: z.string() }) })
     .array()
     .default([]),
+  logoId: z.number().nullable(),
 })
 export type Business = z.infer<typeof businessSchema>
 
