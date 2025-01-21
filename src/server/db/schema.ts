@@ -10,7 +10,6 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core'
 import { generatePassphrase } from 'niceware'
-import { z } from 'zod'
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -36,6 +35,28 @@ export const uploads = createTable(
 )
 
 export type Upload = InferSelectModel<typeof uploads>
+
+// ----- product -----
+export const products = createTable('product', {
+  id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
+  name: varchar('name', { length: 255 }).notNull(),
+  description: text('descripiton'),
+  imageId: integer('image_id').references(() => uploads.id),
+  businesssId: integer('business_id').references(() => businesses.id),
+})
+
+export const productsRelations = relations(products, ({ one }) => {
+  return {
+    image: one(uploads, {
+      fields: [products.imageId],
+      references: [uploads.id],
+    }),
+    business: one(businesses, {
+      fields: [products.businesssId],
+      references: [businesses.id],
+    }),
+  }
+})
 
 // ----- tag -----
 export const tags = createTable('tag', {
@@ -113,22 +134,8 @@ export const businessRelations = relations(businesses, ({ one, many }) => ({
   user: one(users, { fields: [businesses.ownerId], references: [users.id] }),
   tagsToBusinesses: many(tagsToBusinesses),
   logo: one(uploads, { fields: [businesses.logoId], references: [uploads.id] }),
+  products: many(products),
 }))
-
-export const businessSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  description: z.string().nullable(),
-  story: z.string().nullable(),
-  links: z.string().array(),
-  ownerId: z.string().optional(),
-  tagsToBusinesses: z // relations
-    .object({ tag: z.object({ id: z.number(), name: z.string() }) })
-    .array()
-    .default([]),
-  logoId: z.number().nullable(),
-})
-export type Business = z.infer<typeof businessSchema>
 
 // ----- user -----
 export const users = createTable('user', {

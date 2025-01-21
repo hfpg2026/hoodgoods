@@ -3,14 +3,33 @@ import {
   protectedProcedure,
   publicProcedure,
 } from '@/server/api/trpc'
-import {
-  businesses,
-  businessSchema,
-  tagsToBusinesses,
-} from '@/server/db/schema'
+import { businesses, tagsToBusinesses } from '@/server/db/schema'
 import { TRPCError } from '@trpc/server'
 import { and, asc, desc, eq, ilike, or, type AnyColumn } from 'drizzle-orm'
 import { z } from 'zod'
+
+export const businessSelectSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string().nullable(),
+  story: z.string().nullable(),
+  links: z.string().array(),
+  ownerId: z.string().optional(),
+  tagsToBusinesses: z // relations
+    .object({ tag: z.object({ id: z.number(), name: z.string() }) })
+    .array()
+    .default([]),
+  logoId: z.number().nullable(),
+  products: z
+    .object({
+      name: z.string(),
+      description: z.string().nullable(),
+      imageId: z.number().nullable(),
+    })
+    .array()
+    .default([]),
+})
+export type Business = z.infer<typeof businessSelectSchema>
 
 const bizUpdateSchema = z.object({
   id: z.number(),
@@ -146,15 +165,15 @@ export const businessRouter = createTRPCRouter({
         ownerId: z.string().optional(),
       }),
     )
-    .output(businessSchema.optional())
+    .output(businessSelectSchema.optional())
     .query(async ({ ctx, input }) => {
       const biz = await ctx.db.query.businesses.findFirst({
         where: and(
           eq(businesses.id, input.id),
           input.ownerId ? eq(businesses.ownerId, input.ownerId) : undefined,
         ),
-        with: { tagsToBusinesses: { with: { tag: true } } },
+        with: { tagsToBusinesses: { with: { tag: true } }, products: true },
       })
-      return biz ? { ...biz, links: biz.links } : biz
+      return biz
     }),
 })

@@ -15,8 +15,11 @@ import { Navbar } from '@/app/_components/navbar'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
-import { type BizUpdateType } from '@/server/api/routers/business'
-import { type Business, type Tag } from '@/server/db/schema'
+import {
+  type BizUpdateType,
+  type Business,
+} from '@/server/api/routers/business'
+import { type Tag } from '@/server/db/schema'
 import { api } from '@/trpc/react'
 import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
