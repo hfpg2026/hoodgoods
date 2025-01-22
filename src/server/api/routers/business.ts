@@ -50,6 +50,7 @@ export type Product = z.infer<typeof productSchema>
 
 export const businessSelectSchema = z.object({
   id: z.number(),
+  isPublished: z.boolean(),
   name: z.string(),
   description: z.string().nullable(),
   story: z.string().nullable(),
@@ -66,6 +67,7 @@ export type Business = z.infer<typeof businessSelectSchema>
 
 const bizUpdateSchema = z.object({
   id: z.number(),
+  isPublished: z.boolean(),
   name: z
     .string()
     .min(1, { message: 'Business name has to be at least 1 character long' }),
@@ -207,6 +209,7 @@ export const businessRouter = createTRPCRouter({
               : undefined,
             // tag
             input.tag ? eq(tagsToBusinesses.tagId, input.tag) : undefined,
+            eq(businesses.isPublished, true),
           ),
         )
         .orderBy(orderFn(orderColMap[input.orderKey]))
@@ -232,18 +235,37 @@ export const businessRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string().transform((x) => Number(x)),
-        ownerId: z.string().optional(),
+        isEdit: z.boolean().optional(),
       }),
     )
     .output(businessSelectSchema.optional())
     .query(async ({ ctx, input }) => {
+      if (input.isEdit && !ctx.session?.user.id) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
+      }
+
       const biz = await ctx.db.query.businesses.findFirst({
         where: and(
           eq(businesses.id, input.id),
-          input.ownerId ? eq(businesses.ownerId, input.ownerId) : undefined,
+          input.isEdit
+            ? eq(businesses.ownerId, ctx.session!.user.id)
+            : eq(businesses.isPublished, true),
         ),
         with: { tagsToBusinesses: { with: { tag: true } }, products: true },
       })
       return biz
+    }),
+
+  getMyBiz: publicProcedure
+    .output(z.object({ id: z.number().optional() }))
+    .query(async ({ ctx }) => {
+      if (ctx.session?.user.id) {
+        const biz = await ctx.db.query.businesses.findFirst({
+          where: eq(businesses.ownerId, ctx.session.user.id),
+          columns: { id: true },
+        })
+        return biz ?? {}
+      }
+      return {}
     }),
 })

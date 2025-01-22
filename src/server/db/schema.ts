@@ -1,6 +1,7 @@
 import crypto from 'crypto'
 import { relations, sql, type InferSelectModel } from 'drizzle-orm'
 import {
+  boolean,
   index,
   integer,
   pgTableCreator,
@@ -25,7 +26,7 @@ export const uploads = createTable('uploads', {
   name: varchar('name', { length: 255 }).notNull(),
   sizeInBytes: integer('sizeInBytes').notNull(),
   s3ObjectKey: text('s3ObjectKey').notNull(),
-  userId: integer('user_id')
+  userId: varchar('user_id', { length: 255 })
     .references(() => users.id)
     .notNull(),
   createdAt: timestamp('created_at', { withTimezone: true })
@@ -118,6 +119,7 @@ export const businesses = createTable(
     ownerId: varchar('owner_id', { length: 255 })
       .notNull()
       .references(() => users.id),
+    isPublished: boolean().notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

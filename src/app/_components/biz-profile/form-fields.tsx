@@ -18,7 +18,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { MultiSelect } from '@/components/ui/multiselect'
+import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { type BizUpdateType, type Product } from '@/server/api/routers/business'
 import { type Tag as TagType } from '@/server/db/schema'
@@ -121,6 +123,29 @@ export const StoryField = ({ isEdit, value, control }: FieldPropTypes) => {
           )}
         />
       }
+    />
+  )
+}
+
+export const PublishedField = ({ control }: FieldPropTypes) => {
+  return (
+    <FormField
+      control={control}
+      name="isPublished"
+      render={({ field }) => (
+        <FormItem>
+          <div className="flex items-center space-x-2">
+            <FormControl>
+              <Switch
+                id="isPublished"
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <Label htmlFor="isPublished">Published</Label>
+          </div>
+        </FormItem>
+      )}
     />
   )
 }

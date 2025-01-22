@@ -7,6 +7,7 @@ import {
   LinkField,
   NameField,
   ProductsField,
+  PublishedField,
   StoryField,
   TagsField,
 } from '@/app/_components/biz-profile/form-fields'
@@ -20,7 +21,6 @@ import {
 } from '@/server/api/routers/business'
 import { type Tag } from '@/server/db/schema'
 import { api } from '@/trpc/react'
-import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 
 import { ImageUpload } from './image-upload'
@@ -34,12 +34,12 @@ export const BizProfilePage = ({
   tagList: Tag[]
   isEdit?: boolean
 }) => {
-  const { data: session } = useSession()
   const router = useRouter()
 
   const form = useForm<BizUpdateType>({
     defaultValues: {
       id: biz.id,
+      isPublished: biz.isPublished ?? false,
       name: biz.name,
       description: biz.description ?? undefined,
       links: biz.links,
@@ -70,30 +70,26 @@ export const BizProfilePage = ({
   return (
     <main className="flex min-h-screen w-full flex-col gap-2 bg-background pb-6">
       <Navbar showSearch={!isEdit} />
-      {isEdit && (
-        <div className="flex w-full justify-between px-4">
-          <div>✏️ You&apos;re currently editing this business page.</div>
-          <div className="flex gap-2">
-            <Button onClick={onSubmit}>Save</Button>
-            <Button
-              variant="destructive"
-              onClick={() => router.push(`/biz/${biz.id}`)}
-            >
-              Cancel
-            </Button>
+      <Form {...form}>
+        {isEdit && (
+          <div className="flex w-full justify-between px-4">
+            <div>✏️ You&apos;re currently editing this business page.</div>
+            <div className="flex items-center gap-2">
+              <PublishedField control={control} />
+              <Button className="ml-2" onClick={onSubmit}>
+                Save
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => router.push(`/biz/${biz.id}`)}
+              >
+                Cancel
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
-      {!isEdit && biz.ownerId === session?.user.id && (
-        <div className="flex w-full justify-end px-4">
-          <Button onClick={() => router.push(`/biz/${biz.id}/edit`)}>
-            Edit
-          </Button>
-        </div>
-      )}
-      <div className="flex w-full place-content-center pt-4">
-        <div className="flex w-9/12 flex-col gap-6">
-          <Form {...form}>
+        )}
+        <div className="flex w-full place-content-center pt-4">
+          <div className="flex w-9/12 flex-col gap-6">
             {/* biz header */}
             <div className="flex w-full justify-between gap-8">
               <div className="flex w-full gap-8">
@@ -166,9 +162,9 @@ export const BizProfilePage = ({
                 />
               </div>
             )}
-          </Form>
+          </div>
         </div>
-      </div>
+      </Form>
     </main>
   )
 }

@@ -1,8 +1,9 @@
+import { eq } from 'drizzle-orm'
 import { type DefaultSession, type NextAuthConfig, type User } from 'next-auth'
 import credentials from 'next-auth/providers/credentials'
 
 import { db } from '../db'
-import { users } from '../db/schema'
+import { businesses, users } from '../db/schema'
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -44,7 +45,7 @@ export const authConfig = {
       async authorize({ passphrase }) {
         if (passphrase && typeof passphrase === 'string') {
           const user = await db.query.users.findFirst({
-            where: (users, { eq }) => eq(users.passphrase, passphrase),
+            where: eq(users.passphrase, passphrase),
           })
           return user ?? null
         }
@@ -56,6 +57,12 @@ export const authConfig = {
       name: 'new registration',
       async authorize() {
         const user = (await db.insert(users).values({}).returning()).at(0)
+        // auto create biz
+        if (user) {
+          await db
+            .insert(businesses)
+            .values({ name: 'My New Business', ownerId: user.id })
+        }
         return user ?? null
       },
     }),
@@ -74,5 +81,8 @@ export const authConfig = {
         user: token.user as User,
       }
     },
+  },
+  pages: {
+    signIn: '/login',
   },
 } satisfies NextAuthConfig

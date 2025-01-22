@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
-import { AuthButton } from './auth-button'
+import { NavMenu } from './nav-menu'
 import { Searchbar } from './searchbar'
 
 export const Navbar = ({
@@ -32,7 +32,7 @@ export const Navbar = ({
         {showSearch && <Searchbar initialValue={initialSearch} />}
       </div>
       <div>
-        <AuthButton />
+        <NavMenu />
       </div>
     </div>
   )

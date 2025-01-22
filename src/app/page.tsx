@@ -1,8 +1,8 @@
 import Image from 'next/image'
 import { api, HydrateClient } from '@/trpc/server'
 
-import { AuthButton } from './_components/auth-button'
 import { BusinessCard } from './_components/business-card'
+import { NavMenu } from './_components/nav-menu'
 import { Searchbar } from './_components/searchbar'
 import { Tag } from './_components/tag'
 
@@ -19,7 +19,7 @@ export default async function Home() {
     <HydrateClient>
       <main className="flex min-h-screen w-full flex-col gap-2 bg-background pb-6 pt-2">
         <div className="flex w-full items-center justify-end px-6">
-          <AuthButton />
+          <NavMenu />
         </div>
         <div className="flex w-full place-content-center">
           <Image
