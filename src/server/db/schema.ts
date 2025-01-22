@@ -20,32 +20,35 @@ import { generatePassphrase } from 'niceware'
 export const createTable = pgTableCreator((name) => name)
 
 // ----- uploads -----
-export const uploads = createTable(
-  'uploads',
-  {
-    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-    name: varchar('name', { length: 255 }).notNull(),
-    sizeInBytes: integer('sizeInBytes').notNull(),
-    s3ObjectKey: text('s3ObjectKey').notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-  },
-  (_) => [],
-)
+export const uploads = createTable('uploads', {
+  id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
+  name: varchar('name', { length: 255 }).notNull(),
+  sizeInBytes: integer('sizeInBytes').notNull(),
+  s3ObjectKey: text('s3ObjectKey').notNull(),
+  userId: integer('user_id')
+    .references(() => users.id)
+    .notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+})
 
 export type Upload = InferSelectModel<typeof uploads>
 
 // ----- product -----
-export const products = createTable('product', {
-  id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-  name: varchar('name', { length: 255 }).notNull(),
-  description: text('descripiton'),
-  imageId: integer('image_id').references(() => uploads.id),
-  businessId: integer('business_id')
-    .notNull()
-    .references(() => businesses.id),
-})
+export const products = createTable(
+  'product',
+  {
+    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
+    name: varchar('name', { length: 255 }).notNull(),
+    description: text('descripiton'),
+    imageId: integer('image_id').references(() => uploads.id),
+    businessId: integer('business_id')
+      .notNull()
+      .references(() => businesses.id),
+  },
+  (p) => [index('business_id_idx').on(p.businessId)],
+)
 
 export const productsRelations = relations(products, ({ one }) => {
   return {
