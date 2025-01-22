@@ -57,6 +57,9 @@ export default {
         md: `calc(var(--radius) - 2px)`,
         sm: 'calc(var(--radius) - 4px)',
       },
+      gridTemplateColumns: {
+        tags: 'repeat(auto-fit, minmax(75px, 1fr))',
+      },
     },
   },
   plugins: [animations],
