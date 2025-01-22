@@ -38,7 +38,7 @@ export default async function Home() {
         </div>
         {/* tags */}
         <div className="flex w-full place-content-center">
-          <div className="grid w-9/12 grid-flow-row grid-cols-tags gap-2">
+          <div className="flex w-9/12 flex-wrap place-content-center gap-2">
             {tags.map((t) => (
               <Tag key={t.id} tag={t} />
             ))}
