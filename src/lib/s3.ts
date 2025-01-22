@@ -12,7 +12,7 @@ const s3Client = new S3Client({
   endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: {
     accessKeyId: process.env.R2_ACCESS_KEY_ID ?? '',
-    secretAccessKey: process.env.R2_ACCESS_KEY_ID ?? '',
+    secretAccessKey: process.env.R2_ACCESS_KEY_SECRET ?? '',
   },
 })
 
@@ -28,6 +28,7 @@ export const getObjectUrl = async (key: string) => {
 }
 
 export const generatePutObjectUrl = async (key: string) => {
+  console.log('BUCKET', process.env.R2_BUCKET_NAME)
   return await getSignedUrl(
     s3Client,
     new PutObjectCommand({ Bucket: process.env.R2_BUCKET_NAME, Key: key }),

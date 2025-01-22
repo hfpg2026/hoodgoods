@@ -1,4 +1,4 @@
-import { getObjectUrl } from '@/lib/s3'
+import { generatePutObjectUrl, getObjectUrl } from '@/lib/s3'
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -10,6 +10,14 @@ import { and, eq } from 'drizzle-orm'
 import z from 'zod'
 
 export const uploadRouter = createTRPCRouter({
+  generatePresignedUrl: protectedProcedure
+    .input(z.object({ s3ObjectKey: z.string() }))
+    .output(z.object({ url: z.string() }))
+    .mutation(async ({ input }) => {
+      const url = await generatePutObjectUrl(input.s3ObjectKey)
+      return { url }
+    }),
+
   upload: protectedProcedure
     .input(
       z.object({

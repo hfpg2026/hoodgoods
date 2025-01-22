@@ -281,7 +281,15 @@ export const LogoField = ({
         alt="logo"
       />
       <div className="align-center absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] opacity-0 group-hover:opacity-100">
-        {isEdit && <UploadButton bizId={bizId} onUpload={setUploadId} />}
+        {isEdit && (
+          <UploadButton
+            bizId={bizId}
+            onUpload={(uploadId) => {
+              setUploadId(uploadId)
+              console.log(uploadId)
+            }}
+          />
+        )}
       </div>
     </div>
   )
