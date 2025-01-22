@@ -127,13 +127,11 @@ export const businesses = createTable(
       () => new Date(),
     ),
   },
-  (example) => [
-    index('owner_id_idx').on(example.ownerId),
-    index('name_idx').on(example.name),
-    index('search_index').using(
-      'gin',
-      sql`${example.description} gin_trgm_ops`,
-    ),
+  (biz) => [
+    index('owner_id_idx').on(biz.ownerId),
+    index('name_idx').on(biz.name),
+    index('search_index').using('gin', sql`${biz.description} gin_trgm_ops`),
+    index('is_published_idx').on(biz.isPublished),
   ],
 )
 
@@ -145,21 +143,25 @@ export const businessRelations = relations(businesses, ({ one, many }) => ({
 }))
 
 // ----- user -----
-export const users = createTable('user', {
-  id: varchar('id', { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  passphrase: varchar('passphrase', { length: 255 })
-    .notNull()
-    .$defaultFn(() => generatePassphrase(8).join('-')),
-  /* Used for binding to Singpass. Mandatory for biz owners */
-  sgid: varchar('sgid', { length: 127 }).unique(),
-  phone: varchar('phone', { length: 255 }).unique(),
-  createdAt: timestamp('created_at', { withTimezone: true })
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
-})
+export const users = createTable(
+  'user',
+  {
+    id: varchar('id', { length: 255 })
+      .notNull()
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    passphrase: varchar('passphrase', { length: 255 })
+      .notNull()
+      .$defaultFn(() => generatePassphrase(8).join('-')),
+    /* Used for binding to Singpass. Mandatory for biz owners */
+    sgid: varchar('sgid', { length: 127 }).unique(),
+    phone: varchar('phone', { length: 255 }).unique(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (u) => [index('passphrase_idx').on(u.passphrase)],
+)
 
 export const usersRelations = relations(users, ({ many }) => ({
   businessess: many(businesses),
