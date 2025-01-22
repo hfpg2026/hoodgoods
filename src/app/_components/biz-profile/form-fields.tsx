@@ -1,5 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react'
-import Image from 'next/image'
+import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -22,14 +21,14 @@ import { Input } from '@/components/ui/input'
 import { MultiSelect } from '@/components/ui/multiselect'
 import { Textarea } from '@/components/ui/textarea'
 import { type BizUpdateType } from '@/server/api/routers/business'
+import { type Product } from '@/server/api/routers/product'
 import { type Tag as TagType } from '@/server/db/schema'
-import { api } from '@/trpc/react'
 import _ from 'lodash'
 import { type Control, type UseFormSetValue } from 'react-hook-form'
 
 import { Tag } from '../tag'
 import { Link } from './link'
-import { UploadButton } from './upload-button'
+import { EditProductCardDialogContent, ProductCard } from './product-card'
 
 type FieldPropTypes = {
   isEdit?: boolean
@@ -252,45 +251,58 @@ export const TagsField = ({
   )
 }
 
-export const LogoField = ({
+export const ProductsField = ({
   isEdit,
+  products: originalProducts,
   bizId,
-  uploadId: initialUploadId,
+  setValue,
 }: {
   isEdit?: boolean
+  products: Product[]
   bizId: number
-  uploadId?: number | null
+  setValue: UseFormSetValue<BizUpdateType>
 }) => {
-  const [uploadId, setUploadId] = useState(initialUploadId)
-  const { data: imageSrc } = api.upload.get.useQuery(
-    {
-      id: uploadId ?? 0, // should not run
-      businessId: bizId,
+  const [products, setProducts] = useState(originalProducts)
+  const onProductAdd = useCallback(
+    (p: Product) => {
+      const newProducts = [...products, p]
+      setProducts(newProducts)
+      setValue(
+        'productIds',
+        newProducts.map((p) => p.id),
+      )
     },
-    { enabled: !!uploadId },
+    [products, setValue],
+  )
+  const onProductDelete = useCallback(
+    (pid: number) => {
+      const newProducts = products.filter((p) => p.id !== pid)
+      setProducts(newProducts)
+      setValue(
+        'productIds',
+        newProducts.map((p) => p.id),
+      )
+    },
+    [products, setValue],
   )
 
-  const src = imageSrc ? imageSrc.url : '/assets/paperbag.svg'
   return (
-    <div className="max-w-50 group relative">
-      <Image
-        className="w-full group-hover:opacity-30"
-        src={src}
-        width={96}
-        height={96}
-        alt="logo"
-      />
-      <div className="align-center absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] opacity-0 group-hover:opacity-100">
-        {isEdit && (
-          <UploadButton
+    <div className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+      {products.map((p) => (
+        <ProductCard key={p.id} {...p} bizId={bizId} isEdit={isEdit} />
+      ))}
+      {isEdit && (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="w-full">🛍️ Add Product</Button>
+          </DialogTrigger>
+          <EditProductCardDialogContent
             bizId={bizId}
-            onUpload={(uploadId) => {
-              setUploadId(uploadId)
-              console.log(uploadId)
-            }}
+            onProductAdd={onProductAdd}
+            onProductDelete={onProductDelete}
           />
-        )}
-      </div>
+        </Dialog>
+      )}
     </div>
   )
 }

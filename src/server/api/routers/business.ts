@@ -3,10 +3,21 @@ import {
   protectedProcedure,
   publicProcedure,
 } from '@/server/api/trpc'
-import { businesses, tagsToBusinesses } from '@/server/db/schema'
+import { businesses, products, tagsToBusinesses } from '@/server/db/schema'
 import { TRPCError } from '@trpc/server'
-import { and, asc, desc, eq, ilike, or, type AnyColumn } from 'drizzle-orm'
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  or,
+  type AnyColumn,
+} from 'drizzle-orm'
 import { z } from 'zod'
+
+import { productSchema } from './product'
 
 export const businessSelectSchema = z.object({
   id: z.number(),
@@ -20,14 +31,7 @@ export const businessSelectSchema = z.object({
     .array()
     .default([]),
   logoId: z.number().nullable(),
-  products: z
-    .object({
-      name: z.string(),
-      description: z.string().nullable(),
-      imageId: z.number().nullable(),
-    })
-    .array()
-    .default([]),
+  products: productSchema.array().default([]),
 })
 export type Business = z.infer<typeof businessSelectSchema>
 
@@ -40,6 +44,8 @@ const bizUpdateSchema = z.object({
   story: z.string().optional(),
   links: z.string().url().array().optional(),
   tags: z.number().array().optional(),
+  logoId: z.number().optional(),
+  productIds: z.number().array().default([]),
 })
 export type BizUpdateType = z.infer<typeof bizUpdateSchema>
 
@@ -84,11 +90,26 @@ export const businessRouter = createTRPCRouter({
           })
           .where(eq(businesses.id, input.id))
 
-        // delete removed tags
+        // delete tags
         await tx
           .delete(tagsToBusinesses)
           .where(eq(tagsToBusinesses.businessId, input.id))
         // set new tags
+        if (input.tags) {
+          await tx
+            .insert(tagsToBusinesses)
+            .values(input.tags.map((t) => ({ businessId: input.id, tagId: t })))
+        }
+
+        // delete removed products
+        const currentProducts = await tx
+          .select({ id: products.id })
+          .from(products)
+          .where(eq(products.businesssId, input.id))
+        const idsToDelete = currentProducts
+          .filter((cp) => !input.productIds.includes(cp.id))
+          .map((cp) => cp.id)
+        await tx.delete(products).where(inArray(products.id, idsToDelete))
       })
     }),
 

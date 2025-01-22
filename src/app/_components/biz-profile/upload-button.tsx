@@ -2,6 +2,7 @@
 
 import { useCallback, useRef } from 'react'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { generateS3ObjectKey } from '@/lib/s3'
 import { api } from '@/trpc/react'
 
@@ -49,14 +50,16 @@ export const UploadButton = ({
   }, [bizId, createUpload, onUpload, generatePresignedurl])
 
   return (
-    <form className="flex flex-col gap-4">
+    <form className="flex min-w-20 place-content-center">
       <Input
-        id="picture"
+        id="file"
         type="file"
+        className="inputfile"
         accept={IMG_EXTENSIONS.join(',')}
         ref={fileInput}
         onChange={uploadFile}
       />
+      <Label htmlFor="file">💾 Upload</Label>
     </form>
   )
 }

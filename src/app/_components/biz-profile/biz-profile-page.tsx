@@ -5,12 +5,11 @@ import { useRouter } from 'next/navigation'
 import {
   DescriptionField,
   LinkField,
-  LogoField,
   NameField,
+  ProductsField,
   StoryField,
   TagsField,
 } from '@/app/_components/biz-profile/form-fields'
-import { ProductCard } from '@/app/_components/biz-profile/product-card'
 import { Navbar } from '@/app/_components/navbar'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
@@ -23,6 +22,8 @@ import { type Tag } from '@/server/db/schema'
 import { api } from '@/trpc/react'
 import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
+
+import { ImageUpload } from './image-upload'
 
 export const BizProfilePage = ({
   biz,
@@ -67,7 +68,7 @@ export const BizProfilePage = ({
   }, [biz.id, getValues, mutate])
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-2 pb-6">
+    <main className="flex min-h-screen w-full flex-col gap-2 bg-background pb-6">
       <Navbar showSearch={!isEdit} />
       {isEdit && (
         <div className="flex w-full justify-between px-4">
@@ -97,10 +98,11 @@ export const BizProfilePage = ({
             <div className="flex w-full justify-between gap-8">
               <div className="flex w-full gap-8">
                 {/* logo */}
-                <LogoField
+                <ImageUpload
                   isEdit={isEdit}
                   bizId={biz.id}
                   uploadId={biz.logoId}
+                  onUpload={(uploadId) => setValue('logoId', uploadId)}
                 />
 
                 {/* name & description */}
@@ -143,30 +145,12 @@ export const BizProfilePage = ({
               <div className="text-lg font-bold text-primary">
                 🌈 Product Highlights
               </div>
-              <div className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-                {/* TODO */}
-                <ProductCard
-                  img={'/assets/logo-lg.svg'}
-                  name="Large product"
-                  description="Largest product ever"
-                />
-                <ProductCard
-                  img={'/assets/paperbag.svg'}
-                  name="Large product"
-                  description="Largest product ever"
-                />
-                <ProductCard
-                  img={'/assets/logo-header.svg'}
-                  name="Large product"
-                  description="Largest product ever"
-                />
-                <ProductCard
-                  img={'/assets/logo-lg.svg'}
-                  name="Large product"
-                  description="Largest product ever"
-                />
-                {isEdit && <Button>🛍️ Add Product</Button>}
-              </div>
+              <ProductsField
+                products={biz.products}
+                bizId={biz.id}
+                isEdit={isEdit}
+                setValue={setValue}
+              />
             </div>
 
             {/* story */}
