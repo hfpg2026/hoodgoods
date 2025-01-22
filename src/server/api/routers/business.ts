@@ -3,24 +3,80 @@ import {
   protectedProcedure,
   publicProcedure,
 } from '@/server/api/trpc'
-import {
-  businesses,
-  businessSchema,
-  tagsToBusinesses,
-} from '@/server/db/schema'
+import { businesses, products, tagsToBusinesses } from '@/server/db/schema'
 import { TRPCError } from '@trpc/server'
-import { and, asc, desc, eq, ilike, or, type AnyColumn } from 'drizzle-orm'
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  getTableColumns,
+  ilike,
+  inArray,
+  or,
+  sql,
+  type AnyColumn,
+  type SQL,
+} from 'drizzle-orm'
+import { type PgTable } from 'drizzle-orm/pg-core'
+import { type SQLiteTable } from 'drizzle-orm/sqlite-core'
 import { z } from 'zod'
+
+const buildConflictUpdateColumns = <
+  T extends PgTable | SQLiteTable,
+  Q extends keyof T['_']['columns'],
+>(
+  table: T,
+  columns: Q[],
+) => {
+  const cls = getTableColumns(table)
+  return columns.reduce(
+    (acc, column) => {
+      const colName = cls[column]?.name
+      acc[column] = sql.raw(`excluded.${colName}`)
+      return acc
+    },
+    {} as Record<Q, SQL>,
+  )
+}
+
+const productSchema = z.object({
+  id: z.number().optional(),
+  name: z.string(),
+  description: z.string().nullish(),
+  imageId: z.number().nullish(),
+})
+export type Product = z.infer<typeof productSchema>
+
+export const businessSelectSchema = z.object({
+  id: z.number(),
+  isPublished: z.boolean(),
+  name: z.string(),
+  description: z.string().nullable(),
+  story: z.string().nullable(),
+  links: z.string().array(),
+  ownerId: z.string().optional(),
+  tagsToBusinesses: z // relations
+    .object({ tag: z.object({ id: z.number(), name: z.string() }) })
+    .array()
+    .default([]),
+  logoId: z.number().nullable(),
+  products: productSchema.array().default([]),
+})
+export type Business = z.infer<typeof businessSelectSchema>
 
 const bizUpdateSchema = z.object({
   id: z.number(),
+  isPublished: z.boolean(),
   name: z
     .string()
     .min(1, { message: 'Business name has to be at least 1 character long' }),
   description: z.string().optional(),
   story: z.string().optional(),
   links: z.string().url().array().optional(),
-  tags: z.number().array().optional(),
+  tags: z.number().array().default([]),
+  logoId: z.number().optional(),
+  products: productSchema.array().default([]),
 })
 export type BizUpdateType = z.infer<typeof bizUpdateSchema>
 
@@ -65,11 +121,46 @@ export const businessRouter = createTRPCRouter({
           })
           .where(eq(businesses.id, input.id))
 
-        // delete removed tags
+        // delete tags
         await tx
           .delete(tagsToBusinesses)
           .where(eq(tagsToBusinesses.businessId, input.id))
         // set new tags
+        if (input.tags.length) {
+          await tx
+            .insert(tagsToBusinesses)
+            .values(input.tags.map((t) => ({ businessId: input.id, tagId: t })))
+        }
+
+        // delete removed products
+        const currentProducts = await tx
+          .select({ id: products.id })
+          .from(products)
+          .where(eq(products.businessId, input.id))
+        const inputProductIds = input.products.map((p) => p.id)
+        const idsToDelete = currentProducts
+          .filter((cp) => !inputProductIds.includes(cp.id))
+          .map((cp) => cp.id)
+        // delete products
+        await tx.delete(products).where(inArray(products.id, idsToDelete))
+
+        // upsert products
+        if (input.products.length) {
+          await tx
+            .insert(products)
+            .values(input.products.map((p) => ({ ...p, businessId: input.id })))
+            .onConflictDoUpdate({
+              target: products.id,
+              set: {
+                ...buildConflictUpdateColumns(products, [
+                  'name',
+                  'description',
+                  'imageId',
+                  'businessId',
+                ]),
+              },
+            })
+        }
       })
     }),
 
@@ -118,6 +209,7 @@ export const businessRouter = createTRPCRouter({
               : undefined,
             // tag
             input.tag ? eq(tagsToBusinesses.tagId, input.tag) : undefined,
+            eq(businesses.isPublished, true),
           ),
         )
         .orderBy(orderFn(orderColMap[input.orderKey]))
@@ -143,18 +235,37 @@ export const businessRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string().transform((x) => Number(x)),
-        ownerId: z.string().optional(),
+        isEdit: z.boolean().optional(),
       }),
     )
-    .output(businessSchema.optional())
+    .output(businessSelectSchema.optional())
     .query(async ({ ctx, input }) => {
+      if (input.isEdit && !ctx.session?.user.id) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
+      }
+
       const biz = await ctx.db.query.businesses.findFirst({
         where: and(
           eq(businesses.id, input.id),
-          input.ownerId ? eq(businesses.ownerId, input.ownerId) : undefined,
+          input.isEdit
+            ? eq(businesses.ownerId, ctx.session!.user.id)
+            : eq(businesses.isPublished, true),
         ),
-        with: { tagsToBusinesses: { with: { tag: true } } },
+        with: { tagsToBusinesses: { with: { tag: true } }, products: true },
       })
-      return biz ? { ...biz, links: biz.links } : biz
+      return biz
+    }),
+
+  getMyBiz: publicProcedure
+    .output(z.object({ id: z.number().optional() }))
+    .query(async ({ ctx }) => {
+      if (ctx.session?.user.id) {
+        const biz = await ctx.db.query.businesses.findFirst({
+          where: eq(businesses.ownerId, ctx.session.user.id),
+          columns: { id: true },
+        })
+        return biz ?? {}
+      }
+      return {}
     }),
 })

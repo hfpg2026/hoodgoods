@@ -1,21 +1,17 @@
-'use client'
-
-import { notFound, useParams } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { BizProfilePage } from '@/app/_components/biz-profile/biz-profile-page'
-import { api } from '@/trpc/react'
-import { useSession } from 'next-auth/react'
+import { api } from '@/trpc/server'
 
-export default function BizProfileEdit() {
-  const { data: session } = useSession()
-  const params = useParams()
-  const bizId = params.id
-  const [biz] = api.business.get.useSuspenseQuery({
-    id: bizId as string,
-    ownerId: session?.user.id,
-  })
-  const [tagList] = api.tag.findAll.useSuspenseQuery()
-
+export default async function BizProfile({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const bizId = (await params).id
+  const biz = await api.business.get({ id: bizId, isEdit: true })
   if (!biz) notFound()
+
+  const tagList = await api.tag.findAll()
 
   return <BizProfilePage biz={biz} tagList={tagList} isEdit />
 }

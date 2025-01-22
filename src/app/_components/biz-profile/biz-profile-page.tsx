@@ -1,25 +1,29 @@
 'use client'
 
 import { useCallback } from 'react'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import {
   DescriptionField,
   LinkField,
   NameField,
+  ProductsField,
+  PublishedField,
   StoryField,
   TagsField,
 } from '@/app/_components/biz-profile/form-fields'
-import { ProductCard } from '@/app/_components/biz-profile/product-card'
 import { Navbar } from '@/app/_components/navbar'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
-import { type BizUpdateType } from '@/server/api/routers/business'
-import { type Business, type Tag } from '@/server/db/schema'
+import {
+  type BizUpdateType,
+  type Business,
+} from '@/server/api/routers/business'
+import { type Tag } from '@/server/db/schema'
 import { api } from '@/trpc/react'
-import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
+
+import { ImageUpload } from './image-upload'
 
 export const BizProfilePage = ({
   biz,
@@ -30,12 +34,12 @@ export const BizProfilePage = ({
   tagList: Tag[]
   isEdit?: boolean
 }) => {
-  const { data: session } = useSession()
   const router = useRouter()
 
   const form = useForm<BizUpdateType>({
     defaultValues: {
       id: biz.id,
+      isPublished: biz.isPublished ?? false,
       name: biz.name,
       description: biz.description ?? undefined,
       links: biz.links,
@@ -64,42 +68,39 @@ export const BizProfilePage = ({
   }, [biz.id, getValues, mutate])
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-2 pb-6">
+    <main className="flex min-h-screen w-full flex-col gap-2 bg-background pb-6">
       <Navbar showSearch={!isEdit} />
-      {isEdit && (
-        <div className="flex w-full justify-between px-4">
-          <div>✏️ You&apos;re currently editing this business page.</div>
-          <div className="flex gap-2">
-            <Button onClick={onSubmit}>Save</Button>
-            <Button
-              variant="destructive"
-              onClick={() => router.push(`/biz/${biz.id}`)}
-            >
-              Cancel
-            </Button>
+      <Form {...form}>
+        {isEdit && (
+          <div className="flex w-full justify-between px-4">
+            <div>✏️ You&apos;re currently editing this business page.</div>
+            <div className="flex items-center gap-2">
+              <PublishedField control={control} />
+              <Button className="ml-2" onClick={onSubmit}>
+                Save
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => router.push(`/biz/${biz.id}`)}
+              >
+                Cancel
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
-      {!isEdit && biz.ownerId === session?.user.id && (
-        <div className="flex w-full justify-end px-4">
-          <Button onClick={() => router.push(`/biz/${biz.id}/edit`)}>
-            Edit
-          </Button>
-        </div>
-      )}
-      <div className="flex w-full place-content-center pt-4">
-        <div className="flex w-9/12 flex-col gap-6">
-          <Form {...form}>
+        )}
+        <div className="flex w-full place-content-center pt-4">
+          <div className="flex w-9/12 flex-col gap-6">
             {/* biz header */}
             <div className="flex w-full justify-between gap-8">
               <div className="flex w-full gap-8">
                 {/* logo */}
-                <Image
-                  src="/assets/paperbag.svg"
-                  height={96}
-                  width={96}
-                  alt="paperbag"
+                <ImageUpload
+                  isEdit={isEdit}
+                  bizId={biz.id}
+                  uploadId={biz.logoId}
+                  onUpload={(uploadId) => setValue('logoId', uploadId)}
                 />
+
                 {/* name & description */}
                 <div className="flex w-full flex-col gap-2 self-center">
                   <NameField
@@ -140,30 +141,12 @@ export const BizProfilePage = ({
               <div className="text-lg font-bold text-primary">
                 🌈 Product Highlights
               </div>
-              <div className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-                {/* TODO */}
-                <ProductCard
-                  img={'/assets/logo-lg.svg'}
-                  name="Large product"
-                  description="Largest product ever"
-                />
-                <ProductCard
-                  img={'/assets/paperbag.svg'}
-                  name="Large product"
-                  description="Largest product ever"
-                />
-                <ProductCard
-                  img={'/assets/logo-header.svg'}
-                  name="Large product"
-                  description="Largest product ever"
-                />
-                <ProductCard
-                  img={'/assets/logo-lg.svg'}
-                  name="Large product"
-                  description="Largest product ever"
-                />
-                {isEdit && <Button>🛍️ Add Product</Button>}
-              </div>
+              <ProductsField
+                products={biz.products}
+                bizId={biz.id}
+                isEdit={isEdit}
+                setValue={setValue}
+              />
             </div>
 
             {/* story */}
@@ -179,9 +162,9 @@ export const BizProfilePage = ({
                 />
               </div>
             )}
-          </Form>
+          </div>
         </div>
-      </div>
+      </Form>
     </main>
   )
 }

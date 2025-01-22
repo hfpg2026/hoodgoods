@@ -1,6 +1,7 @@
 import crypto from 'crypto'
 import { relations, sql, type InferSelectModel } from 'drizzle-orm'
 import {
+  boolean,
   index,
   integer,
   pgTableCreator,
@@ -10,7 +11,6 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core'
 import { generatePassphrase } from 'niceware'
-import { z } from 'zod'
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -20,6 +20,51 @@ import { z } from 'zod'
  */
 export const createTable = pgTableCreator((name) => name)
 
+// ----- uploads -----
+export const uploads = createTable('uploads', {
+  id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
+  name: varchar('name', { length: 255 }).notNull(),
+  sizeInBytes: integer('sizeInBytes').notNull(),
+  s3ObjectKey: text('s3ObjectKey').notNull(),
+  userId: varchar('user_id', { length: 255 })
+    .references(() => users.id)
+    .notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+})
+
+export type Upload = InferSelectModel<typeof uploads>
+
+// ----- product -----
+export const products = createTable(
+  'product',
+  {
+    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
+    name: varchar('name', { length: 255 }).notNull(),
+    description: text('descripiton'),
+    imageId: integer('image_id').references(() => uploads.id),
+    businessId: integer('business_id')
+      .notNull()
+      .references(() => businesses.id),
+  },
+  (p) => [index('business_id_idx').on(p.businessId)],
+)
+
+export const productsRelations = relations(products, ({ one }) => {
+  return {
+    image: one(uploads, {
+      fields: [products.imageId],
+      references: [uploads.id],
+    }),
+    business: one(businesses, {
+      fields: [products.businessId],
+      references: [businesses.id],
+    }),
+  }
+})
+
+// ----- tag -----
 export const tags = createTable('tag', {
   id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
   name: varchar('name', { length: 255 }).notNull(),
@@ -70,9 +115,11 @@ export const businesses = createTable(
       .notNull()
       .default(sql`'{}'::text[]`),
     story: text('story'),
+    logoId: integer('logo_id').references(() => uploads.id),
     ownerId: varchar('owner_id', { length: 255 })
       .notNull()
       .references(() => users.id),
+    isPublished: boolean().notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -80,51 +127,41 @@ export const businesses = createTable(
       () => new Date(),
     ),
   },
-  (example) => [
-    index('owner_id_idx').on(example.ownerId),
-    index('name_idx').on(example.name),
-    index('search_index').using(
-      'gin',
-      sql`${example.description} gin_trgm_ops`,
-    ),
+  (biz) => [
+    index('owner_id_idx').on(biz.ownerId),
+    index('name_idx').on(biz.name),
+    index('search_index').using('gin', sql`${biz.description} gin_trgm_ops`),
+    index('is_published_idx').on(biz.isPublished),
   ],
 )
 
 export const businessRelations = relations(businesses, ({ one, many }) => ({
   user: one(users, { fields: [businesses.ownerId], references: [users.id] }),
   tagsToBusinesses: many(tagsToBusinesses),
+  logo: one(uploads, { fields: [businesses.logoId], references: [uploads.id] }),
+  products: many(products),
 }))
 
-export const businessSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  description: z.string().nullable(),
-  story: z.string().nullable(),
-  links: z.string().array(),
-  ownerId: z.string().optional(),
-  tagsToBusinesses: z // relations
-    .object({ tag: z.object({ id: z.number(), name: z.string() }) })
-    .array()
-    .default([]),
-})
-export type Business = z.infer<typeof businessSchema>
-
 // ----- user -----
-export const users = createTable('user', {
-  id: varchar('id', { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  passphrase: varchar('passphrase', { length: 255 })
-    .notNull()
-    .$defaultFn(() => generatePassphrase(8).join('-')),
-  /* Used for binding to Singpass. Mandatory for biz owners */
-  sgid: varchar('sgid', { length: 127 }).unique(),
-  phone: varchar('phone', { length: 255 }).unique(),
-  createdAt: timestamp('created_at', { withTimezone: true })
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
-})
+export const users = createTable(
+  'user',
+  {
+    id: varchar('id', { length: 255 })
+      .notNull()
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    passphrase: varchar('passphrase', { length: 255 })
+      .notNull()
+      .$defaultFn(() => generatePassphrase(8).join('-')),
+    /* Used for binding to Singpass. Mandatory for biz owners */
+    sgid: varchar('sgid', { length: 127 }).unique(),
+    phone: varchar('phone', { length: 255 }).unique(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (u) => [index('passphrase_idx').on(u.passphrase)],
+)
 
 export const usersRelations = relations(users, ({ many }) => ({
   businessess: many(businesses),

@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -18,15 +18,18 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { MultiSelect } from '@/components/ui/multiselect'
+import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { type BizUpdateType } from '@/server/api/routers/business'
+import { type BizUpdateType, type Product } from '@/server/api/routers/business'
 import { type Tag as TagType } from '@/server/db/schema'
 import _ from 'lodash'
 import { type Control, type UseFormSetValue } from 'react-hook-form'
 
 import { Tag } from '../tag'
 import { Link } from './link'
+import { EditProductCardDialogContent, ProductCard } from './product-card'
 
 type FieldPropTypes = {
   isEdit?: boolean
@@ -120,6 +123,29 @@ export const StoryField = ({ isEdit, value, control }: FieldPropTypes) => {
           )}
         />
       }
+    />
+  )
+}
+
+export const PublishedField = ({ control }: FieldPropTypes) => {
+  return (
+    <FormField
+      control={control}
+      name="isPublished"
+      render={({ field }) => (
+        <FormItem>
+          <div className="flex items-center space-x-2">
+            <FormControl>
+              <Switch
+                id="isPublished"
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <Label htmlFor="isPublished">Published</Label>
+          </div>
+        </FormItem>
+      )}
     />
   )
 }
@@ -243,6 +269,56 @@ export const TagsField = ({
               </DialogClose>
             </DialogFooter>
           </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  )
+}
+
+export const ProductsField = ({
+  isEdit,
+  products: originalProducts,
+  bizId,
+  setValue,
+}: {
+  isEdit?: boolean
+  products: Product[]
+  bizId: number
+  setValue: UseFormSetValue<BizUpdateType>
+}) => {
+  const [products, setProducts] = useState(originalProducts)
+  const onProductAdd = useCallback(
+    (p: Product) => {
+      const newProducts = [...products, p]
+      setProducts(newProducts)
+      setValue('products', newProducts)
+    },
+    [products, setValue],
+  )
+  const onProductDelete = useCallback(
+    (pid: number) => {
+      const newProducts = products.filter((p) => p.id !== pid)
+      setProducts(newProducts)
+      setValue('products', newProducts)
+    },
+    [products, setValue],
+  )
+
+  return (
+    <div className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+      {products.map((p) => (
+        <ProductCard key={p.id} {...p} bizId={bizId} isEdit={isEdit} />
+      ))}
+      {isEdit && (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="w-full">🛍️ Add Product</Button>
+          </DialogTrigger>
+          <EditProductCardDialogContent
+            bizId={bizId}
+            onProductAdd={onProductAdd}
+            onProductDelete={onProductDelete}
+          />
         </Dialog>
       )}
     </div>
