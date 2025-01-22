@@ -41,7 +41,7 @@ export const uploadRouter = createTRPCRouter({
       return (
         await ctx.db
           .insert(uploads)
-          .values({ ...input })
+          .values({ ...input, userId: ctx.session.user.id })
           .returning({ id: uploads.id })
       )[0]!
     }),

@@ -15,7 +15,9 @@ import { signOut, useSession } from 'next-auth/react'
 export const NavMenu = () => {
   const session = useSession()
   const router = useRouter()
-  const [biz] = api.business.getMyBiz.useSuspenseQuery()
+  const { data: biz } = api.business.getMyBiz.useQuery(undefined, {
+    enabled: session.status === 'authenticated',
+  })
 
   return (
     <DropdownMenu>
@@ -41,13 +43,13 @@ export const NavMenu = () => {
           <>
             <DropdownMenuItem
               className="cursor-pointer"
-              onClick={() => router.push(`/biz/${biz.id!}`)}
+              onClick={() => router.push(`/biz/${biz?.id}`)}
             >
               View Business
             </DropdownMenuItem>
             <DropdownMenuItem
               className="cursor-pointer"
-              onClick={() => router.push(`/biz/${biz.id!}/edit`)}
+              onClick={() => router.push(`/biz/${biz?.id}/edit`)}
             >
               Edit Business
             </DropdownMenuItem>

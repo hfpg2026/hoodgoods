@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,9 +10,6 @@ import { signIn } from 'next-auth/react'
 import { NavMenu } from '../_components/nav-menu'
 
 export default function Login() {
-  const searchParams = useSearchParams()
-  const err = searchParams.get('error')
-
   const [passphrase, setPassphrase] = useState('')
   return (
     <main className="flex min-h-screen w-full flex-col gap-6 bg-background pb-6 pt-2">
@@ -39,11 +35,6 @@ export default function Login() {
             onChange={(e) => setPassphrase(e.target.value)}
             placeholder="correct-horse-battery-staple"
           />
-          {err && (
-            <div className="text-sm text-destructive">
-              Incorrect passphrase, please try again.
-            </div>
-          )}
           <Button
             onClick={() =>
               signIn('passphrase', { passphrase, redirectTo: '/' })
