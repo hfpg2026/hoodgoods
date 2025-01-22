@@ -28,10 +28,12 @@ export const getObjectUrl = async (key: string) => {
 }
 
 export const generatePutObjectUrl = async (key: string) => {
-  console.log('BUCKET', process.env.R2_BUCKET_NAME)
   return await getSignedUrl(
     s3Client,
-    new PutObjectCommand({ Bucket: process.env.R2_BUCKET_NAME, Key: key }),
+    new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: key,
+    }),
     { expiresIn: 3600 },
   )
 }

@@ -24,11 +24,16 @@ export const ImageUpload = ({
     { enabled: !!uploadId && !!bizId },
   )
 
-  const src = imageSrc ? imageSrc.url : '/assets/paperbag.svg'
   return (
     <div className="max-w-50 group relative flex place-content-center">
       <div className="max-w-30 h-auto place-content-center group-hover:opacity-30">
-        <Image src={src} width={96} height={96} alt="logo" />
+        {imageSrc ? (
+          <picture>
+            <img src={imageSrc.url} alt="logo" width={96} height={96} />
+          </picture>
+        ) : (
+          <Image src="/assets/paperbag.svg" width={96} height={96} alt="logo" />
+        )}
       </div>
       <div className="align-center absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] opacity-0 group-hover:opacity-100">
         {isEdit && (
