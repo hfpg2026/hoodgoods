@@ -20,8 +20,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { MultiSelect } from '@/components/ui/multiselect'
 import { Textarea } from '@/components/ui/textarea'
-import { type BizUpdateType } from '@/server/api/routers/business'
-import { type Product } from '@/server/api/routers/product'
+import { type BizUpdateType, type Product } from '@/server/api/routers/business'
 import { type Tag as TagType } from '@/server/db/schema'
 import _ from 'lodash'
 import { type Control, type UseFormSetValue } from 'react-hook-form'
@@ -267,10 +266,7 @@ export const ProductsField = ({
     (p: Product) => {
       const newProducts = [...products, p]
       setProducts(newProducts)
-      setValue(
-        'productIds',
-        newProducts.map((p) => p.id),
-      )
+      setValue('products', newProducts)
     },
     [products, setValue],
   )
@@ -278,10 +274,7 @@ export const ProductsField = ({
     (pid: number) => {
       const newProducts = products.filter((p) => p.id !== pid)
       setProducts(newProducts)
-      setValue(
-        'productIds',
-        newProducts.map((p) => p.id),
-      )
+      setValue('products', newProducts)
     },
     [products, setValue],
   )

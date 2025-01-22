@@ -42,7 +42,9 @@ export const products = createTable('product', {
   name: varchar('name', { length: 255 }).notNull(),
   description: text('descripiton'),
   imageId: integer('image_id').references(() => uploads.id),
-  businesssId: integer('business_id').references(() => businesses.id),
+  businessId: integer('business_id')
+    .notNull()
+    .references(() => businesses.id),
 })
 
 export const productsRelations = relations(products, ({ one }) => {
@@ -52,7 +54,7 @@ export const productsRelations = relations(products, ({ one }) => {
       references: [uploads.id],
     }),
     business: one(businesses, {
-      fields: [products.businesssId],
+      fields: [products.businessId],
       references: [businesses.id],
     }),
   }

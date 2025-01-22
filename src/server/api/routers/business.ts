@@ -10,14 +10,43 @@ import {
   asc,
   desc,
   eq,
+  getTableColumns,
   ilike,
   inArray,
   or,
+  sql,
   type AnyColumn,
+  type SQL,
 } from 'drizzle-orm'
+import { type PgTable } from 'drizzle-orm/pg-core'
+import { type SQLiteTable } from 'drizzle-orm/sqlite-core'
 import { z } from 'zod'
 
-import { productSchema } from './product'
+const buildConflictUpdateColumns = <
+  T extends PgTable | SQLiteTable,
+  Q extends keyof T['_']['columns'],
+>(
+  table: T,
+  columns: Q[],
+) => {
+  const cls = getTableColumns(table)
+  return columns.reduce(
+    (acc, column) => {
+      const colName = cls[column]?.name
+      acc[column] = sql.raw(`excluded.${colName}`)
+      return acc
+    },
+    {} as Record<Q, SQL>,
+  )
+}
+
+const productSchema = z.object({
+  id: z.number().optional(),
+  name: z.string(),
+  description: z.string().nullish(),
+  imageId: z.number().nullish(),
+})
+export type Product = z.infer<typeof productSchema>
 
 export const businessSelectSchema = z.object({
   id: z.number(),
@@ -43,9 +72,9 @@ const bizUpdateSchema = z.object({
   description: z.string().optional(),
   story: z.string().optional(),
   links: z.string().url().array().optional(),
-  tags: z.number().array().optional(),
+  tags: z.number().array().default([]),
   logoId: z.number().optional(),
-  productIds: z.number().array().default([]),
+  products: productSchema.array().default([]),
 })
 export type BizUpdateType = z.infer<typeof bizUpdateSchema>
 
@@ -95,7 +124,7 @@ export const businessRouter = createTRPCRouter({
           .delete(tagsToBusinesses)
           .where(eq(tagsToBusinesses.businessId, input.id))
         // set new tags
-        if (input.tags) {
+        if (input.tags.length) {
           await tx
             .insert(tagsToBusinesses)
             .values(input.tags.map((t) => ({ businessId: input.id, tagId: t })))
@@ -105,11 +134,31 @@ export const businessRouter = createTRPCRouter({
         const currentProducts = await tx
           .select({ id: products.id })
           .from(products)
-          .where(eq(products.businesssId, input.id))
+          .where(eq(products.businessId, input.id))
+        const inputProductIds = input.products.map((p) => p.id)
         const idsToDelete = currentProducts
-          .filter((cp) => !input.productIds.includes(cp.id))
+          .filter((cp) => !inputProductIds.includes(cp.id))
           .map((cp) => cp.id)
+        // delete products
         await tx.delete(products).where(inArray(products.id, idsToDelete))
+
+        // upsert products
+        if (input.products.length) {
+          await tx
+            .insert(products)
+            .values(input.products.map((p) => ({ ...p, businessId: input.id })))
+            .onConflictDoUpdate({
+              target: products.id,
+              set: {
+                ...buildConflictUpdateColumns(products, [
+                  'name',
+                  'description',
+                  'imageId',
+                  'businessId',
+                ]),
+              },
+            })
+        }
       })
     }),
 

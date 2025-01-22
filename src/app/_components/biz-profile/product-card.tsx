@@ -21,10 +21,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  type Product,
-  type ProductUpdateType,
-} from '@/server/api/routers/product'
+import { type Product } from '@/server/api/routers/business'
 import { api } from '@/trpc/react'
 import { useForm } from 'react-hook-form'
 
@@ -88,37 +85,32 @@ export const EditProductCardDialogContent = ({
   onProductUpdate?: (product: Product) => void
   onProductDelete?: (productId: number) => void
 }) => {
-  const form = useForm<ProductUpdateType>({
+  const form = useForm<Product>({
     defaultValues: {
       name: product?.name ?? '',
       description: product?.description ?? '',
       imageId: product?.imageId ?? undefined,
-      businessId: bizId,
     },
   })
   const { control, setValue, getValues } = form
 
-  const { mutateAsync: create } = api.product.create.useMutation()
-  const { mutateAsync: update } = api.product.update.useMutation()
   const onSave = useCallback(async () => {
     const values = getValues()
     if (!product) {
-      const newProduct = await create(values)
-      onProductAdd?.(newProduct)
+      onProductAdd?.(values)
       form.reset()
     } else {
-      const updatedProduct = await update({ ...values, id: product.id })
-      onProductUpdate?.(updatedProduct)
+      onProductUpdate?.(values)
     }
-  }, [create, getValues, update, onProductUpdate, onProductAdd, product])
+  }, [getValues, onProductUpdate, onProductAdd, product, form])
   const onDelete = useCallback(() => {
     if (!product) {
       // do nothing
     } else {
-      onProductDelete?.(product.id)
+      onProductDelete?.(product.id!)
     }
     form.reset()
-  }, [onProductDelete, product])
+  }, [onProductDelete, product, form])
 
   return (
     <DialogContent>
@@ -156,7 +148,11 @@ export const EditProductCardDialogContent = ({
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Product Description" {...field} />
+                  <Textarea
+                    placeholder="Product Description"
+                    {...field}
+                    value={field.value ?? ''}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
