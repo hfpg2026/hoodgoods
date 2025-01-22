@@ -39,7 +39,7 @@ export const NavMenu = () => {
             Hustler&apos;s Login
           </DropdownMenuItem>
         )}
-        {session.status === 'authenticated' && (
+        {biz && (
           <>
             <DropdownMenuItem
               className="cursor-pointer"
@@ -54,13 +54,15 @@ export const NavMenu = () => {
               Edit Business
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => signOut()}
-            >
-              Sign Out
-            </DropdownMenuItem>
           </>
+        )}
+        {session.status === 'authenticated' && (
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => signOut()}
+          >
+            Sign Out
+          </DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
