@@ -91,8 +91,8 @@ export const BizProfilePage = ({
         <div className="flex w-full place-content-center pt-4">
           <div className="flex w-9/12 flex-col gap-6">
             {/* biz header */}
-            <div className="flex w-full justify-between gap-8">
-              <div className="flex w-full gap-8">
+            <div className="flex w-full flex-wrap justify-between gap-8">
+              <div className="flex w-full max-w-screen-md gap-8">
                 {/* logo */}
                 <ImageUpload
                   isEdit={isEdit}
@@ -117,7 +117,7 @@ export const BizProfilePage = ({
               </div>
 
               {/* links */}
-              <div className="flex min-w-56 flex-col gap-1 self-center">
+              <div className="flex min-w-40 flex-col gap-1 self-center">
                 <LinkField
                   isEdit={isEdit}
                   values={linksLocal ?? []}

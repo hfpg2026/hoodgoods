@@ -16,7 +16,7 @@ export const Navbar = ({
   const router = useRouter()
 
   return (
-    <div className="flex w-full items-center justify-between px-3 pt-2">
+    <div className="flex w-full flex-wrap items-center justify-between px-4 pt-2">
       <div>
         <Image
           src="/assets/logo-header.svg"
@@ -28,11 +28,14 @@ export const Navbar = ({
           className="cursor-pointer"
         />
       </div>
-      <div className="m-auto flex w-9/12">
+      <div className="m-auto flex hidden w-9/12 md:block">
         {showSearch && <Searchbar initialValue={initialSearch} />}
       </div>
       <div>
         <NavMenu />
+      </div>
+      <div className="m-auto block flex w-full pt-2 md:hidden">
+        {showSearch && <Searchbar initialValue={initialSearch} />}
       </div>
     </div>
   )
