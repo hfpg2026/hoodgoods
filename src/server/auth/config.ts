@@ -3,7 +3,7 @@ import { type DefaultSession, type NextAuthConfig, type User } from 'next-auth'
 import credentials from 'next-auth/providers/credentials'
 
 import { db } from '../db'
-import { businesses, users } from '../db/schema'
+import { users } from '../db/schema'
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -57,12 +57,6 @@ export const authConfig = {
       name: 'new registration',
       async authorize() {
         const user = (await db.insert(users).values({}).returning()).at(0)
-        // auto create biz
-        if (user) {
-          await db
-            .insert(businesses)
-            .values({ name: 'My New Business', ownerId: user.id })
-        }
         return user ?? null
       },
     }),
