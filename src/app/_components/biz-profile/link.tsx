@@ -15,6 +15,6 @@ export const Link = ({ href }: { href: string }) => {
 
     return <a href={href}>🔗 {href}</a>
   } catch (e) {
-    console.error('Invalid URL:', href)
+    console.error('Invalid URL:', href, e)
   }
 }
