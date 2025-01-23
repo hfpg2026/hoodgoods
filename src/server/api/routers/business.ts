@@ -247,9 +247,10 @@ export const businessRouter = createTRPCRouter({
       const biz = await ctx.db.query.businesses.findFirst({
         where: and(
           eq(businesses.id, input.id),
-          input.isEdit
-            ? eq(businesses.ownerId, ctx.session!.user.id)
-            : eq(businesses.isPublished, true),
+          or(
+            eq(businesses.ownerId, ctx.session!.user.id),
+            input.isEdit ? undefined : eq(businesses.isPublished, true),
+          ),
         ),
         with: { tagsToBusinesses: { with: { tag: true } }, products: true },
       })

@@ -34,9 +34,8 @@ export const UploadButton = ({
     // upload
     const { url } = await generatePresignedurl({ s3ObjectKey })
     await fetch(url, {
-      method: 'POST',
+      method: 'PUT',
       body: formData,
-      mode: 'cors',
     })
     // create in db
     const upload = await createUpload({
