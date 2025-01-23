@@ -23,6 +23,7 @@ import { type Tag } from '@/server/db/schema'
 import { api } from '@/trpc/react'
 import { useForm } from 'react-hook-form'
 
+import { Bookmark } from './bookmark'
 import { ImageUpload } from './image-upload'
 
 export const BizProfilePage = ({
@@ -117,12 +118,13 @@ export const BizProfilePage = ({
               </div>
 
               {/* links */}
-              <div className="flex min-w-40 flex-col gap-1 self-center">
+              <div className="flex min-w-40 gap-4 self-center">
                 <LinkField
                   isEdit={isEdit}
                   values={linksLocal ?? []}
                   setValue={setValue}
                 />
+                {!isEdit && <Bookmark bizId={biz.id} />}
               </div>
             </div>
 
