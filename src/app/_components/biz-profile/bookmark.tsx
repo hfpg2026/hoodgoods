@@ -6,24 +6,34 @@ export const Bookmark = ({ bizId }: { bizId: number }) => {
   const [{ total, isUserBookmark }] = api.bookmark.getForBiz.useSuspenseQuery({
     businessId: bizId,
   })
+  const [isBookmarked, setIsBookmarked] = useState(isUserBookmark)
 
   const [count, setCount] = useState(total)
-  const { mutate: saveBookmark } = api.bookmark.create.useMutation({
-    onSuccess: ({ isInsert: insert }) => insert && setCount(count + 1),
-  })
+  const { mutateAsync: saveBookmark, isPending } =
+    api.bookmark.create.useMutation({
+      onSuccess: () => {
+        setIsBookmarked(true)
+        setCount(count + 1)
+      },
+    })
   const { mutate: deleteBookmark } = api.bookmark.delete.useMutation({
-    onSuccess: ({ isDelete }) => isDelete && setCount(count - 1),
+    onSuccess: () => {
+      setIsBookmarked(false)
+      setCount(count - 1)
+    },
   })
   return (
     <div
       className="flex flex-col text-center"
       onClick={() =>
-        isUserBookmark
-          ? deleteBookmark({ id: bizId })
-          : saveBookmark({ id: bizId })
+        isPending
+          ? true // do nothing
+          : isBookmarked
+            ? deleteBookmark({ id: bizId })
+            : saveBookmark({ id: bizId })
       }
     >
-      {isUserBookmark ? (
+      {isBookmarked ? (
         <Image
           src="/assets/bookmark-filled.svg"
           alt="bookmark"
