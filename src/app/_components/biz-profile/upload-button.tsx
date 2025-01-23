@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { generateS3ObjectKey } from '@/lib/s3'
@@ -23,19 +23,26 @@ export const UploadButton = ({
   const { mutateAsync: createUpload } = api.upload.upload.useMutation({
     trpc: { abortOnUnmount: true },
   })
+  const [err, setErr] = useState('')
 
   const uploadFile = useCallback(async () => {
-    const formData = new FormData()
     const file = fileInput?.current?.files?.[0]
-    if (!file) throw new Error('file not found')
-    formData.append('file', file)
+    if (!file) {
+      setErr('File not found')
+      throw new Error(err)
+    }
+    if (file.size >= 2097152) {
+      // 2mb
+      setErr('File too large, please upload file < 2MB')
+      throw new Error(err)
+    }
 
     const s3ObjectKey = generateS3ObjectKey(file.name, bizId)
     // upload
     const { url } = await generatePresignedurl({ s3ObjectKey })
     await fetch(url, {
       method: 'PUT',
-      body: formData,
+      body: file,
     })
     // create in db
     const upload = await createUpload({
@@ -46,7 +53,7 @@ export const UploadButton = ({
     })
 
     onUpload?.(upload.id)
-  }, [bizId, createUpload, onUpload, generatePresignedurl])
+  }, [bizId, generatePresignedurl, createUpload, onUpload, err])
 
   return (
     <form className="flex min-w-20 place-content-center">
