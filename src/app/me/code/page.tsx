@@ -6,9 +6,13 @@ import { Navbar } from '@/app/_components/navbar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { api } from '@/trpc/react'
+import { useSession } from 'next-auth/react'
 
 export default function Code() {
-  const [me] = api.users.getMyself.useSuspenseQuery()
+  const session = useSession()
+  const { data: me } = api.users.getMyself.useQuery(undefined, {
+    enabled: session.status === 'authenticated',
+  })
   if (!me) notFound()
 
   return (
