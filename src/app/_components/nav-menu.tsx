@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,26 +20,23 @@ export const NavMenu = () => {
     enabled: session.status === 'authenticated',
   })
 
+  if (session.status === 'unauthenticated') {
+    return (
+      <Button variant="ghost" onClick={() => router.push('/login')}>
+        Login
+      </Button>
+    )
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>&#9776;</DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>
-          {session.data?.user.passphrase ?? 'Hello'}
+        <DropdownMenuLabel onClick={() => router.push('/me/code')}>
+          {session.data?.user.passphrase}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {session.status === 'loading' && (
-          <DropdownMenuLabel>Loading...</DropdownMenuLabel>
-        )}
-        {session.status === 'unauthenticated' && (
-          <DropdownMenuItem
-            onClick={() => router.push('/login')}
-            className="cursor-pointer"
-          >
-            Hustler&apos;s Login
-          </DropdownMenuItem>
-        )}
         {biz && (
           <>
             <DropdownMenuItem
@@ -55,23 +53,20 @@ export const NavMenu = () => {
             </DropdownMenuItem>
           </>
         )}
-        {session.status === 'authenticated' && (
-          <>
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => router.push(`/me/bookmarks`)}
-            >
-              My Bookmarks
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => signOut()}
-            >
-              Sign Out
-            </DropdownMenuItem>
-          </>
-        )}
+
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => router.push(`/me/bookmarks`)}
+        >
+          My Bookmarks
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => signOut({ redirectTo: '/' })}
+        >
+          Sign Out
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

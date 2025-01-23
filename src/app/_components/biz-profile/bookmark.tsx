@@ -3,27 +3,38 @@ import Image from 'next/image'
 import { api } from '@/trpc/react'
 
 export const Bookmark = ({ bizId }: { bizId: number }) => {
-  const [{ total, isUserBookmark }] = api.bookmark.getForBiz.useSuspenseQuery({
-    businessId: bizId,
-  })
+  const [{ count: originalCount, isUserBookmark }] =
+    api.bookmark.getForBiz.useSuspenseQuery({
+      businessId: bizId,
+    })
+  const [isBookmarked, setIsBookmarked] = useState(isUserBookmark)
 
-  const [count, setCount] = useState(total)
-  const { mutate: saveBookmark } = api.bookmark.create.useMutation({
-    onSuccess: ({ isInsert: insert }) => insert && setCount(count + 1),
-  })
+  const [count, setCount] = useState(originalCount)
+  const { mutateAsync: saveBookmark, isPending } =
+    api.bookmark.create.useMutation({
+      onSuccess: ({ count: newCount }) => {
+        setIsBookmarked(true)
+        setCount(newCount)
+      },
+    })
   const { mutate: deleteBookmark } = api.bookmark.delete.useMutation({
-    onSuccess: ({ isDelete }) => isDelete && setCount(count - 1),
+    onSuccess: ({ count: newCount }) => {
+      setIsBookmarked(false)
+      setCount(newCount)
+    },
   })
   return (
     <div
       className="flex flex-col text-center"
       onClick={() =>
-        isUserBookmark
-          ? deleteBookmark({ id: bizId })
-          : saveBookmark({ id: bizId })
+        isPending
+          ? true // do nothing
+          : isBookmarked
+            ? deleteBookmark({ id: bizId })
+            : saveBookmark({ id: bizId })
       }
     >
-      {isUserBookmark ? (
+      {isBookmarked ? (
         <Image
           src="/assets/bookmark-filled.svg"
           alt="bookmark"
