@@ -44,7 +44,7 @@ export default function Login() {
           </Button>
           <Button
             variant="ghost"
-            onClick={() => signIn('register', { redirectTo: '/' })}
+            onClick={() => signIn('register', { redirectTo: '/me/code' })}
           >
             Create New Account
           </Button>
