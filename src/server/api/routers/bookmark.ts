@@ -13,9 +13,7 @@ import { businessSelectSchema } from './business'
 export const bookmarkRouter = createTRPCRouter({
   getForBiz: publicProcedure
     .input(z.object({ businessId: z.number() }))
-    .output(
-      z.object({ total: z.number().default(0), isUserBookmark: z.boolean() }),
-    )
+    .output(z.object({ count: z.number(), isUserBookmark: z.boolean() }))
     .query(async ({ ctx, input }) => {
       const totalCount = await db
         .select({ count: count() })
@@ -32,27 +30,31 @@ export const bookmarkRouter = createTRPCRouter({
         })
         isUserBookmark = !!userBookmark
       }
-      return { count: totalCount[0]?.count, isUserBookmark }
+      return { count: totalCount[0]!.count, isUserBookmark }
     }),
 
   create: protectedProcedure
     .input(z.object({ id: z.number() }))
-    .output(z.object({ isInsert: z.boolean() }))
+    .output(z.object({ count: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const res = await ctx.db
+      await ctx.db
         .insert(bookmarks)
         .values({ businessId: input.id, userId: ctx.session.user.id })
         .onConflictDoNothing({
           target: [bookmarks.userId, bookmarks.businessId],
         })
-      return { isInsert: res.length === 0 }
+      const totalCount = await db
+        .select({ count: count() })
+        .from(bookmarks)
+        .where(eq(bookmarks.businessId, input.id))
+      return { count: totalCount[0]!.count }
     }),
 
   delete: protectedProcedure
     .input(z.object({ id: z.number() }))
-    .output(z.object({ isDelete: z.boolean() }))
+    .output(z.object({ count: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const res = await ctx.db
+      await ctx.db
         .delete(bookmarks)
         .where(
           and(
@@ -60,7 +62,11 @@ export const bookmarkRouter = createTRPCRouter({
             eq(bookmarks.businessId, input.id),
           ),
         )
-      return { isDelete: res.length === 0 }
+      const totalCount = await db
+        .select({ count: count() })
+        .from(bookmarks)
+        .where(eq(bookmarks.businessId, input.id))
+      return { count: totalCount[0]!.count }
     }),
 
   getUserBookmarks: protectedProcedure

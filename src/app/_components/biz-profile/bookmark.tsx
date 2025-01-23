@@ -3,23 +3,24 @@ import Image from 'next/image'
 import { api } from '@/trpc/react'
 
 export const Bookmark = ({ bizId }: { bizId: number }) => {
-  const [{ total, isUserBookmark }] = api.bookmark.getForBiz.useSuspenseQuery({
-    businessId: bizId,
-  })
+  const [{ count: originalCount, isUserBookmark }] =
+    api.bookmark.getForBiz.useSuspenseQuery({
+      businessId: bizId,
+    })
   const [isBookmarked, setIsBookmarked] = useState(isUserBookmark)
 
-  const [count, setCount] = useState(total)
+  const [count, setCount] = useState(originalCount)
   const { mutateAsync: saveBookmark, isPending } =
     api.bookmark.create.useMutation({
-      onSuccess: () => {
+      onSuccess: ({ count: newCount }) => {
         setIsBookmarked(true)
-        setCount(count + 1)
+        setCount(newCount)
       },
     })
   const { mutate: deleteBookmark } = api.bookmark.delete.useMutation({
-    onSuccess: () => {
+    onSuccess: ({ count: newCount }) => {
       setIsBookmarked(false)
-      setCount(count - 1)
+      setCount(newCount)
     },
   })
   return (
