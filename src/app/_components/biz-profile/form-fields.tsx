@@ -161,7 +161,19 @@ export const LinkField = ({
 }) => {
   const [links, setLinks] = useState(values.join(', ') ?? '')
   const onSave = (links: string) => {
-    const linksArr = _.uniq(links.split(',').map((l) => l.trim()))
+    const linksArr = _.uniq(
+      // TOOD safer way to do this?
+      links.split(',').map((l) => {
+        let url: URL
+        try {
+          url = new URL(l.trim())
+        } catch (e) {
+          // try inputting https:// infront
+          url = new URL(`//${l.trim()}`, 'https://hoodgoods.hack2025.gov.sg')
+        }
+        return url.toString()
+      }),
+    )
     setValue('links', linksArr)
   }
   return (
