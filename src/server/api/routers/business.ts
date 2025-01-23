@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -21,6 +22,8 @@ import {
 import { type PgTable } from 'drizzle-orm/pg-core'
 import { type SQLiteTable } from 'drizzle-orm/sqlite-core'
 import { z } from 'zod'
+
+import { postalCodeToSvy21 } from '../onemap'
 
 const buildConflictUpdateColumns = <
   T extends PgTable | SQLiteTable,
@@ -62,6 +65,9 @@ export const businessSelectSchema = z.object({
     .default([]),
   logoId: z.number().nullable(),
   products: productSchema.array().default([]),
+  postalCode: z.string().regex(/\d{6}/).nullable(),
+  svy21X: z.string().nullable(),
+  svy21Y: z.string().nullable(),
 })
 export type Business = z.infer<typeof businessSelectSchema>
 
@@ -77,6 +83,7 @@ const bizUpdateSchema = z.object({
   tags: z.number().array().default([]),
   logoId: z.number().optional(),
   products: productSchema.array().default([]),
+  postalCode: z.string().regex(/\d{6}/),
 })
 export type BizUpdateType = z.infer<typeof bizUpdateSchema>
 
@@ -111,6 +118,8 @@ export const businessRouter = createTRPCRouter({
           })
         }
 
+        const { x, y } = await postalCodeToSvy21(input.postalCode)
+
         await tx
           .update(businesses)
           .set({
@@ -118,6 +127,15 @@ export const businessRouter = createTRPCRouter({
             description: input.description,
             story: input.story,
             links: input.links,
+            postalCode: input.postalCode,
+            svy21X: (
+              Number(x) +
+              crypto.randomInt(-50000, 50000) / 10000
+            ).toString(),
+            svy21Y: (
+              Number(y) +
+              crypto.randomInt(-50000, 50000) / 10000
+            ).toString(),
           })
           .where(eq(businesses.id, input.id))
 
@@ -218,17 +236,25 @@ export const businessRouter = createTRPCRouter({
         .$dynamic()
 
       if (input.tag) {
-        return await query.innerJoin(
+        const prelim = await query.innerJoin(
           tagsToBusinesses,
           eq(tagsToBusinesses.businessId, businesses.id),
         )
+        return prelim.map((row) => {
+          row.business.postalCode = null
+          return row
+        })
       }
 
       // left join to keep data structure constant
-      return await query.leftJoin(
+      const prelim = await query.leftJoin(
         tagsToBusinesses,
         eq(tagsToBusinesses.businessId, businesses.id),
       )
+      return prelim.map((row) => {
+        row.business.postalCode = null
+        return row
+      })
     }),
 
   get: publicProcedure
@@ -248,12 +274,16 @@ export const businessRouter = createTRPCRouter({
         where: and(
           eq(businesses.id, input.id),
           or(
-            eq(businesses.ownerId, ctx.session!.user.id),
+            (ctx.session && eq(businesses.ownerId, ctx.session.user.id)) ??
+              undefined,
             input.isEdit ? undefined : eq(businesses.isPublished, true),
           ),
         ),
         with: { tagsToBusinesses: { with: { tag: true } }, products: true },
       })
+      if (biz && ctx.session?.user.id !== biz.ownerId) {
+        biz.postalCode = null
+      }
       return biz
     }),
 

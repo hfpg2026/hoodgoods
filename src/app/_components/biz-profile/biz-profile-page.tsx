@@ -6,6 +6,7 @@ import {
   DescriptionField,
   LinkField,
   NameField,
+  PostalCodeField,
   ProductsField,
   PublishedField,
   StoryField,
@@ -46,6 +47,7 @@ export const BizProfilePage = ({
       links: biz.links,
       story: biz.story ?? undefined,
       tags: biz.tagsToBusinesses.map((ttb) => ttb.tag.id),
+      postalCode: biz.postalCode ?? undefined,
     },
   })
   const { control, watch, getValues, setValue } = form
@@ -114,6 +116,7 @@ export const BizProfilePage = ({
                     value={biz.description ?? ''}
                     control={control}
                   />
+                  {isEdit && <PostalCodeField control={control} />}
                 </div>
               </div>
 
