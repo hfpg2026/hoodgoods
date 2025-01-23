@@ -34,6 +34,13 @@ export default async function Search({
       {/* businessess */}
       <div className="flex w-full place-content-center pt-4">
         <div className="flex w-9/12 flex-col gap-4">
+          {businesses.length === 0 && (
+            <div className="flex flex-col gap-4 text-center">
+              <div>
+                Uh-oh, nothing was found, try searching for something else!
+              </div>
+            </div>
+          )}
           {businesses.map(({ business: b }) => (
             <BusinessCard
               key={b.id}
