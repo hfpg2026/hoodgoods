@@ -20,6 +20,32 @@ import { generatePassphrase } from 'niceware'
  */
 export const createTable = pgTableCreator((name) => name)
 
+// ----- bookmarks -----
+export const bookmarks = createTable(
+  'bookmarks',
+  {
+    userId: varchar('user_id', { length: 255 })
+      .references(() => users.id)
+      .notNull(),
+    businessId: integer('business_id')
+      .references(() => businesses.id)
+      .notNull(),
+  },
+  (b) => [
+    primaryKey({ columns: [b.userId, b.businessId] }),
+    index('business_id_id').on(b.businessId),
+  ],
+)
+
+export const bookmarksRelations = relations(bookmarks, ({ one }) => {
+  return {
+    business: one(businesses, {
+      fields: [bookmarks.businessId],
+      references: [businesses.id],
+    }),
+  }
+})
+
 // ----- uploads -----
 export const uploads = createTable('uploads', {
   id: integer('id').primaryKey().generatedByDefaultAsIdentity(),

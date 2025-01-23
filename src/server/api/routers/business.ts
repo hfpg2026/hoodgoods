@@ -55,7 +55,7 @@ export const businessSelectSchema = z.object({
   description: z.string().nullable(),
   story: z.string().nullable(),
   links: z.string().array(),
-  ownerId: z.string().optional(),
+  ownerId: z.string(),
   tagsToBusinesses: z // relations
     .object({ tag: z.object({ id: z.number(), name: z.string() }) })
     .array()

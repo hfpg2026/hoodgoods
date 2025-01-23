@@ -53,16 +53,24 @@ export const NavMenu = () => {
             >
               Edit Business
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
           </>
         )}
         {session.status === 'authenticated' && (
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => signOut()}
-          >
-            Sign Out
-          </DropdownMenuItem>
+          <>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => router.push(`/me/bookmarks`)}
+            >
+              My Bookmarks
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => signOut()}
+            >
+              Sign Out
+            </DropdownMenuItem>
+          </>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
