@@ -103,6 +103,24 @@ export const DescriptionField = ({
   )
 }
 
+export const PostalCodeField = ({ control }: FieldPropTypes) => {
+  return (
+    <FormField
+      control={control}
+      name="postalCode"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Postal Code</FormLabel>
+          <FormControl>
+            <Input placeholder="Postal Code" {...field} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  )
+}
+
 export const StoryField = ({ isEdit, value, control }: FieldPropTypes) => {
   return (
     <EditableField
