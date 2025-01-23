@@ -2,6 +2,7 @@ import crypto from 'crypto'
 import { relations, sql, type InferSelectModel } from 'drizzle-orm'
 import {
   boolean,
+  decimal,
   index,
   integer,
   pgTableCreator,
@@ -145,6 +146,12 @@ export const businesses = createTable(
     ownerId: varchar('owner_id', { length: 255 })
       .notNull()
       .references(() => users.id),
+    // the postal code where the business is. shown only to the business owner.
+    postalCode: text('postal_code'),
+    // svy21 values contain cartesian coordinates derived from the postal code,
+    // with a small amount of jitter (0-5m) to mask the true location of the business
+    svy21X: decimal('svy21_x'),
+    svy21Y: decimal('svy21_y'),
     isPublished: boolean().notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
