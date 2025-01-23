@@ -32,7 +32,9 @@ export const NavMenu = () => {
     <DropdownMenu>
       <DropdownMenuTrigger>&#9776;</DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>{session.data?.user.passphrase}</DropdownMenuLabel>
+        <DropdownMenuLabel onClick={() => router.push('/me/code')}>
+          {session.data?.user.passphrase}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
         {biz && (
@@ -59,7 +61,10 @@ export const NavMenu = () => {
           My Bookmarks
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer" onClick={() => signOut()}>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => signOut({ redirectTo: '/' })}
+        >
           Sign Out
         </DropdownMenuItem>
       </DropdownMenuContent>
