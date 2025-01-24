@@ -190,6 +190,7 @@ export const businessRouter = createTRPCRouter({
         limit: z.number().default(10),
         page: z.number().default(1),
         searchTerm: z.string().optional(),
+        postalCode: z.string().regex(/\d{6}/).optional(),
         tag: z
           .string()
           .optional()
@@ -251,7 +252,34 @@ export const businessRouter = createTRPCRouter({
         tagsToBusinesses,
         eq(tagsToBusinesses.businessId, businesses.id),
       )
-      return prelim.map((row) => {
+      const result = prelim
+      if (input.postalCode) {
+        const { x, y } = await postalCodeToSvy21(input.postalCode)
+        result.sort(({ business: a }, { business: b }) => {
+          if (!a.postalCode && !b.postalCode) {
+            return 0
+          } else if (!a.postalCode) {
+            return 1
+          } else if (!b.postalCode) {
+            return -1
+          } else if (a.svy21X && a.svy21Y && b.svy21X && b.svy21Y) {
+            const distA =
+              (((Number(a.svy21X) - Number(x)) ^ 2) +
+                ((Number(a.svy21Y) - Number(y)) ^ 2)) ^
+              0.5
+
+            const distB =
+              (((Number(b.svy21X) - Number(x)) ^ 2) +
+                ((Number(b.svy21Y) - Number(y)) ^ 2)) ^
+              0.5
+
+            return distB - distA
+          } else {
+            return 0
+          }
+        })
+      }
+      return result.map((row) => {
         row.business.postalCode = null
         return row
       })
