@@ -25,10 +25,11 @@ export default async function Search({
       <Navbar initialSearch={searchTerm} />
       {/* tags */}
       <div className="flex w-full place-content-center gap-2">
-        {tags.map((t) => (
-          <Tag key={t.id} tag={t} />
-        ))}
-        {/* TODO filter */}
+        <div className="flex w-9/12 flex-wrap place-content-center gap-2">
+          {tags.map((t) => (
+            <Tag key={t.id} tag={t} />
+          ))}
+        </div>
       </div>
 
       {/* businessess */}
