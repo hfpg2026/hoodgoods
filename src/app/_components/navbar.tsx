@@ -8,9 +8,11 @@ import { Searchbar } from './searchbar'
 
 export const Navbar = ({
   initialSearch,
+  initialPostalCode,
   showSearch = true,
 }: {
   initialSearch?: string
+  initialPostalCode?: string
   showSearch?: boolean
 }) => {
   const router = useRouter()
@@ -29,13 +31,23 @@ export const Navbar = ({
         />
       </div>
       <div className="m-auto flex hidden w-9/12 md:block">
-        {showSearch && <Searchbar initialValue={initialSearch} />}
+        {showSearch && (
+          <Searchbar
+            initialValue={initialSearch}
+            initialPostalCode={initialPostalCode}
+          />
+        )}
       </div>
       <div>
         <NavMenu />
       </div>
       <div className="m-auto block flex w-full pt-2 md:hidden">
-        {showSearch && <Searchbar initialValue={initialSearch} />}
+        {showSearch && (
+          <Searchbar
+            initialValue={initialSearch}
+            initialPostalCode={initialPostalCode}
+          />
+        )}
       </div>
     </div>
   )
