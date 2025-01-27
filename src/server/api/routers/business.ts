@@ -273,7 +273,7 @@ export const businessRouter = createTRPCRouter({
                 ((Number(b.svy21Y) - Number(y)) ^ 2)) ^
               0.5
 
-            return distB - distA
+            return Math.abs(distA) - Math.abs(distB)
           } else {
             return 0
           }

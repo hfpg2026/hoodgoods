@@ -9,7 +9,7 @@ export default async function Search({
 }: {
   searchParams: Promise<Record<string, string | undefined>>
 }) {
-  const { search: searchTerm, tag } = await searchParams
+  const { search: searchTerm, postalCode, tag } = await searchParams
 
   const tags = await api.tag.findAll()
   const businesses = await api.business.find({
@@ -17,12 +17,13 @@ export default async function Search({
     order: 'desc',
     limit: 10,
     searchTerm,
+    postalCode,
     tag,
   })
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-2 pb-6 pt-2">
-      <Navbar initialSearch={searchTerm} />
+      <Navbar initialSearch={searchTerm} initialPostalCode={postalCode} />
       {/* tags */}
       <div className="flex w-full place-content-center gap-2">
         <div className="flex w-9/12 flex-wrap place-content-center gap-2">
