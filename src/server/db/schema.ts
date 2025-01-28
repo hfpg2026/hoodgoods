@@ -152,6 +152,8 @@ export const businesses = createTable(
     // with a small amount of jitter (0-5m) to mask the true location of the business
     svy21X: decimal('svy21_x'),
     svy21Y: decimal('svy21_y'),
+    nearestMrt: text('nearest_mrt'),
+    nearestMrtDistance: decimal('nearest_mrt_distance'),
     isPublished: boolean().notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
