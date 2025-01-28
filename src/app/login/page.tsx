@@ -2,21 +2,17 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { signIn } from 'next-auth/react'
 
-import { NavMenu } from '../_components/nav-menu'
-
 export default function Login() {
+  const router = useRouter()
   const [passphrase, setPassphrase] = useState('')
   return (
-    <main className="flex min-h-screen w-full flex-col gap-6 bg-background pb-6 pt-2">
-      <div className="flex w-full items-center justify-end px-6">
-        <NavMenu />
-      </div>
-
+    <main className="flex min-h-screen w-full flex-col gap-6 bg-background pt-24">
       <div className="flex w-full place-content-center">
         <Image
           src="/assets/logo-lg.svg"
@@ -24,6 +20,7 @@ export default function Login() {
           height={200}
           alt="Hood Goods"
           priority
+          onClick={() => router.push('/')}
         />
       </div>
 
@@ -45,6 +42,7 @@ export default function Login() {
           <Button
             variant="ghost"
             onClick={() => signIn('register', { redirectTo: '/me/code' })}
+            className="m-4"
           >
             Create New Account
           </Button>

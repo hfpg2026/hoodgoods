@@ -15,6 +15,22 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(['development', 'test', 'production'])
       .default('development'),
+    R2_ACCOUNT_ID:
+      process.env.NODE_ENV === 'production'
+        ? z.string()
+        : z.string().optional(),
+    R2_ACCESS_KEY_ID:
+      process.env.NODE_ENV === 'production'
+        ? z.string()
+        : z.string().optional(),
+    R2_ACCESS_KEY_SECRET:
+      process.env.NODE_ENV === 'production'
+        ? z.string()
+        : z.string().optional(),
+    R2_BUCKET_NAME:
+      process.env.NODE_ENV === 'production'
+        ? z.string()
+        : z.string().optional(),
     ONEMAP_API_KEY:
       process.env.NODE_ENV === 'production'
         ? z.string()
@@ -38,6 +54,10 @@ export const env = createEnv({
     AUTH_SECRET: process.env.AUTH_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
+    R2_ACCOUNT_ID: process.env.R2_ACCOUNT_ID,
+    R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
+    R2_ACCESS_KEY_SECRET: process.env.R2_ACCESS_KEY_SECRET,
+    R2_BUCKET_NAME: process.env.R2_BUCKET_NAME,
     ONEMAP_API_KEY: process.env.ONEMAP_API_KEY,
   },
   /**

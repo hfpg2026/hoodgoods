@@ -1,8 +1,15 @@
+'use client'
+
 import { useState } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { api } from '@/trpc/react'
+import { useSession } from 'next-auth/react'
 
 export const Bookmark = ({ bizId }: { bizId: number }) => {
+  const session = useSession()
+  const router = useRouter()
+
   const [{ count: originalCount, isUserBookmark }] =
     api.bookmark.getForBiz.useSuspenseQuery({
       businessId: bizId,
@@ -25,13 +32,15 @@ export const Bookmark = ({ bizId }: { bizId: number }) => {
   })
   return (
     <div
-      className="flex flex-col text-center"
+      className="flex cursor-pointer flex-col text-center"
       onClick={() =>
         isPending
           ? true // do nothing
-          : isBookmarked
-            ? deleteBookmark({ id: bizId })
-            : saveBookmark({ id: bizId })
+          : !session.data?.user.id
+            ? router.push('/login')
+            : isBookmarked
+              ? deleteBookmark({ id: bizId })
+              : saveBookmark({ id: bizId })
       }
     >
       {isBookmarked ? (
