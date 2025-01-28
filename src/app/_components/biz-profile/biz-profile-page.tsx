@@ -116,7 +116,12 @@ export const BizProfilePage = ({
                     value={biz.description ?? ''}
                     control={control}
                   />
-                  {isEdit && <PostalCodeField control={control} />}
+                  <PostalCodeField
+                    isEdit={isEdit}
+                    control={control}
+                    nearestMrt={biz.nearestMrt}
+                    nearestMrtDistance={biz.nearestMrtDistance}
+                  />
                 </div>
               </div>
 

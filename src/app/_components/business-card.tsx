@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { Business } from '@/server/api/routers/business'
+import { type Business } from '@/server/api/routers/business'
 import { api } from '@/trpc/react'
 
 import { toTitleCase } from './utils/str'
@@ -42,7 +42,7 @@ export const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
         <div className="font-bold text-primary">{name}</div>
         <div className="italic text-primary">{description}</div>
         {nearestMrt && nearestMrtDistance && (
-          <div className="pt-2 text-sm">
+          <div className="pt-2 text-sm italic">
             📍{' '}
             {Number(nearestMrtDistance) < 1000
               ? Number(nearestMrtDistance).toFixed(0) + 'm'
