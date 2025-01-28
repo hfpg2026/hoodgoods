@@ -22,12 +22,17 @@ import { Label } from '@/components/ui/label'
 import { MultiSelect } from '@/components/ui/multiselect'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { type BizUpdateType, type Product } from '@/server/api/routers/business'
+import {
+  type BizUpdateType,
+  type Business,
+  type Product,
+} from '@/server/api/routers/business'
 import { type Tag as TagType } from '@/server/db/schema'
 import _ from 'lodash'
 import { type Control, type UseFormSetValue } from 'react-hook-form'
 
 import { Tag } from '../tag'
+import { toTitleCase } from '../utils/str'
 import { Link } from './link'
 import { EditProductCardDialogContent, ProductCard } from './product-card'
 
@@ -81,7 +86,7 @@ export const DescriptionField = ({
 }: FieldPropTypes) => {
   return (
     <EditableField
-      className="italics"
+      className="italic"
       isEdit={isEdit}
       value={value}
       editField={
@@ -103,8 +108,13 @@ export const DescriptionField = ({
   )
 }
 
-export const PostalCodeField = ({ control }: FieldPropTypes) => {
-  return (
+export const PostalCodeField = ({
+  isEdit,
+  control,
+  nearestMrt,
+  nearestMrtDistance,
+}: FieldPropTypes & Pick<Business, 'nearestMrt' | 'nearestMrtDistance'>) => {
+  return isEdit ? (
     <FormField
       control={control}
       name="postalCode"
@@ -118,6 +128,16 @@ export const PostalCodeField = ({ control }: FieldPropTypes) => {
         </FormItem>
       )}
     />
+  ) : nearestMrt && nearestMrtDistance ? (
+    <div className="pt-2 text-sm italic">
+      📍{' '}
+      {Number(nearestMrtDistance) < 1000
+        ? Number(nearestMrtDistance).toFixed(0) + 'm'
+        : (Number(nearestMrtDistance) / 1000).toFixed(0) + 'km'}{' '}
+      from {toTitleCase(nearestMrt)}
+    </div>
+  ) : (
+    <></>
   )
 }
 

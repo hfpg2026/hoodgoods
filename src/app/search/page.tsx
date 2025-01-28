@@ -44,12 +44,7 @@ export default async function Search({
             </div>
           )}
           {businesses.map(({ business: b }) => (
-            <BusinessCard
-              key={b.id}
-              id={b.id}
-              name={b.name}
-              description={b.description ?? ''}
-            />
+            <BusinessCard key={b.id} biz={b} />
           ))}
         </div>
       </div>

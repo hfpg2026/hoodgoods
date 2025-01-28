@@ -23,7 +23,7 @@ import { type PgTable } from 'drizzle-orm/pg-core'
 import { type SQLiteTable } from 'drizzle-orm/sqlite-core'
 import { z } from 'zod'
 
-import { postalCodeToSvy21 } from '../onemap'
+import { getNearestMrt, postalCodeSortFn, postalCodeToSvy21 } from '../onemap'
 
 const buildConflictUpdateColumns = <
   T extends PgTable | SQLiteTable,
@@ -68,6 +68,8 @@ export const businessSelectSchema = z.object({
   postalCode: z.string().regex(/\d{6}/).nullable(),
   svy21X: z.string().nullable(),
   svy21Y: z.string().nullable(),
+  nearestMrt: z.string().nullable(),
+  nearestMrtDistance: z.string().nullable(),
 })
 export type Business = z.infer<typeof businessSelectSchema>
 
@@ -119,7 +121,7 @@ export const businessRouter = createTRPCRouter({
         }
 
         const { x, y } = await postalCodeToSvy21(input.postalCode)
-
+        const { nearestMrt, dist } = getNearestMrt({ x, y })
         await tx
           .update(businesses)
           .set({
@@ -136,6 +138,8 @@ export const businessRouter = createTRPCRouter({
               Number(y) +
               crypto.randomInt(-50000, 50000) / 10000
             ).toString(),
+            nearestMrt,
+            nearestMrtDistance: dist.toFixed(3).toString(),
           })
           .where(eq(businesses.id, input.id))
 
@@ -200,11 +204,7 @@ export const businessRouter = createTRPCRouter({
     .output(
       z
         .object({
-          business: z.object({
-            id: z.number(),
-            name: z.string(),
-            description: z.string().nullable(),
-          }),
+          business: businessSelectSchema,
         })
         .array(),
     )
@@ -252,6 +252,7 @@ export const businessRouter = createTRPCRouter({
         tagsToBusinesses,
         eq(tagsToBusinesses.businessId, businesses.id),
       )
+
       const result = prelim
       if (input.postalCode) {
         const { x, y } = await postalCodeToSvy21(input.postalCode)
@@ -262,20 +263,8 @@ export const businessRouter = createTRPCRouter({
             return 1
           } else if (!b.postalCode) {
             return -1
-          } else if (a.svy21X && a.svy21Y && b.svy21X && b.svy21Y) {
-            const distA =
-              (((Number(a.svy21X) - Number(x)) ^ 2) +
-                ((Number(a.svy21Y) - Number(y)) ^ 2)) ^
-              0.5
-
-            const distB =
-              (((Number(b.svy21X) - Number(x)) ^ 2) +
-                ((Number(b.svy21Y) - Number(y)) ^ 2)) ^
-              0.5
-
-            return Math.abs(distA) - Math.abs(distB)
           } else {
-            return 0
+            return postalCodeSortFn({ x, y })(a, b)
           }
         })
       }

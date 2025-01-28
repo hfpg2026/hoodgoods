@@ -23,12 +23,7 @@ export default async function Bookmarks() {
             </div>
           )}
           {bookmarks.map(({ business: b }) => (
-            <BusinessCard
-              key={b.id}
-              id={b.id}
-              name={b.name}
-              description={b.description ?? ''}
-            />
+            <BusinessCard key={b.id} biz={b} />
           ))}
         </div>
       </div>
