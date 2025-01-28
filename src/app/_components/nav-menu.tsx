@@ -43,13 +43,13 @@ export const NavMenu = () => {
               className="cursor-pointer"
               onClick={() => router.push(`/biz/${biz?.id}`)}
             >
-              View Business
+              My Business
             </DropdownMenuItem>
             <DropdownMenuItem
               className="cursor-pointer"
               onClick={() => router.push(`/biz/${biz?.id}/edit`)}
             >
-              Edit Business
+              Edit My Business
             </DropdownMenuItem>
           </>
         )}
