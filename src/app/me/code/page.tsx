@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { Navbar } from '@/app/_components/navbar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,8 +9,9 @@ import { useSession } from 'next-auth/react'
 
 export default function Code() {
   const session = useSession()
-
   if (session.status !== 'authenticated') return <></>
+
+  const router = useRouter()
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-6 bg-background pb-6 pt-2">
@@ -17,8 +19,8 @@ export default function Code() {
 
       <div className="flex w-full place-content-center">
         <Image
-          src="/assets/logo-lg.svg"
-          width={200}
+          src="/assets/logo-rainbow.svg"
+          width={720}
           height={200}
           alt="Hood Goods"
           priority
@@ -41,6 +43,9 @@ export default function Code() {
               💾 Copy
             </Button>
           </div>
+          <Button variant="ghost" onClick={() => router.push('/')}>
+            🏠 Back to Home
+          </Button>
         </div>
       </div>
     </main>

@@ -8,12 +8,11 @@ import { type Tag as TagType } from '@/server/db/schema'
 export const Tag = ({ tag }: { tag: TagType }) => {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const isActive = searchParams.get('tag') === tag.id.toString()
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString())
-      params.set(name, value)
+      params.append(name, value)
 
       return params.toString()
     },
@@ -22,7 +21,8 @@ export const Tag = ({ tag }: { tag: TagType }) => {
 
   return (
     <Button
-      variant={isActive ? undefined : 'outline'}
+      className="rounded-full"
+      variant="outline"
       onClick={() =>
         router.push(`/search/?${createQueryString('tag', tag.id.toString())}`)
       }

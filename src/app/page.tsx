@@ -23,8 +23,8 @@ export default async function Home() {
         </div>
         <div className="flex w-full place-content-center">
           <Image
-            src="/assets/logo-lg.svg"
-            width={200}
+            src="/assets/logo-rainbow.svg"
+            width={720}
             height={200}
             alt="Hood Goods"
             priority
@@ -32,7 +32,7 @@ export default async function Home() {
         </div>
         {/* searchbar */}
         <div className="flex w-full place-content-center">
-          <div className="flex w-9/12 gap-6">
+          <div className="m-2 w-full md:w-9/12">
             <Searchbar />
           </div>
         </div>
@@ -47,12 +47,12 @@ export default async function Home() {
         {/* new businessess */}
         <div className="flex w-full place-content-center pt-4">
           <div className="flex w-9/12 flex-col gap-4">
-            <div className="text-lg font-bold text-primary">
-              💖 New Kids on the Block
+            <div className="text-lg font-bold">💖 New Kids on the Block</div>
+            <div className="grid grid-cols-3 gap-4">
+              {businesses.map(({ business: b }) => (
+                <BusinessCard key={b.id} biz={b} />
+              ))}
             </div>
-            {businesses.map(({ business: b }) => (
-              <BusinessCard key={b.id} biz={b} />
-            ))}
           </div>
         </div>
       </main>

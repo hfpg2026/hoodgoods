@@ -20,15 +20,15 @@ export const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
 
   return (
     <div
-      className="flex cursor-pointer gap-4 rounded-lg bg-accent shadow-md"
+      className="align-center flex cursor-pointer flex-col gap-4 rounded-lg bg-accent shadow-md"
       onClick={() => router.push(`/biz/${id}`)}
     >
       {imageSrc?.url ? (
         <picture>
-          <img src={imageSrc.url} alt={name} width={24} height={9246} />
+          <img src={imageSrc.url} alt={name} width={400} height={100} />
         </picture>
       ) : (
-        <div className="p-4">
+        <div className="self-center pt-3">
           <Image
             src="/assets/paperbag.svg"
             height={56}
@@ -38,11 +38,13 @@ export const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
         </div>
       )}
 
-      <div className="flex flex-col place-content-center">
-        <div className="font-bold text-primary">{name}</div>
-        <div className="italic text-primary">{description}</div>
+      <div className="flex flex-col place-content-center justify-between gap-2 p-3">
+        <div className="flex flex-col gap-2">
+          <div className="text-lg font-bold text-primary">{name}</div>
+          <div>{description}</div>
+        </div>
         {nearestMrt && nearestMrtDistance && (
-          <div className="pt-2 text-sm italic">
+          <div className="pt-1 text-sm italic">
             📍{' '}
             {Number(nearestMrtDistance) < 1000
               ? Number(nearestMrtDistance).toFixed(0) + 'm'

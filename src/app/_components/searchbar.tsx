@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 
 export const Searchbar = ({
   onSearch: userSearchFn,
@@ -23,28 +25,41 @@ export const Searchbar = ({
         )
 
   return (
-    <div className="relative w-full">
-      <form className="flex flex-row" onSubmit={() => onSearch(searchTerm)}>
-        <input
-          className="focus:shadow-outline h-10 w-full rounded-lg border border-primary pl-3 pr-8 text-base"
-          type="text"
-          placeholder="Find your 'hood good"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <input
-          className="focus:shadow-outline ml-2 h-10 w-1/3 rounded-lg border border-primary pl-3 pr-8 text-base"
-          type="text"
-          placeholder="Postcode"
-          value={postalCode}
-          onChange={(e) => setPostalCode(e.target.value)}
-        />
-        <button
-          className="flex items-center rounded-r-lg px-3 font-bold"
+    <div className="w-full rounded-lg border border-primary bg-white p-3 pb-1">
+      <form
+        className="flex h-full flex-row justify-center"
+        onSubmit={() => onSearch(searchTerm)}
+      >
+        <div className="flex w-full flex-col px-2">
+          <div className="text-xs">Find your Hood Good</div>
+          <input
+            className="h-10 w-full py-0 font-medium focus:outline-none"
+            placeholder="Search Goods"
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <Separator orientation="vertical" />
+
+        <div className="flex w-full flex-col px-2">
+          <div className="text-xs">Where</div>
+          <input
+            className="h-10 w-full font-medium focus:outline-none"
+            type="number"
+            placeholder="Postal Code"
+            value={postalCode}
+            onChange={(e) => setPostalCode(e.target.value)}
+          />
+        </div>
+
+        <Button
           formAction={() => onSearch(searchTerm)}
+          className="mb-2 self-center rounded-lg"
         >
-          🔍
-        </button>
+          Explore
+        </Button>
       </form>
     </div>
   )

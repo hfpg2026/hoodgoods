@@ -30,7 +30,7 @@ export const Navbar = ({
           className="cursor-pointer"
         />
       </div>
-      <div className="m-auto flex hidden w-9/12 md:block">
+      <div className="m-auto hidden w-6/12 md:block">
         {showSearch && (
           <Searchbar
             initialValue={initialSearch}

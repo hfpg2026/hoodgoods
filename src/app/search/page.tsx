@@ -24,25 +24,17 @@ export default async function Search({
   return (
     <main className="flex min-h-screen w-full flex-col gap-2 pb-6 pt-2">
       <Navbar initialSearch={searchTerm} initialPostalCode={postalCode} />
-      {/* tags */}
-      <div className="flex w-full place-content-center gap-2">
-        <div className="flex w-9/12 flex-wrap place-content-center gap-2">
-          {tags.map((t) => (
-            <Tag key={t.id} tag={t} />
-          ))}
-        </div>
-      </div>
 
       {/* businessess */}
       <div className="flex w-full place-content-center pt-4">
-        <div className="flex w-9/12 flex-col gap-4">
-          {businesses.length === 0 && (
-            <div className="flex flex-col gap-4 text-center">
-              <div>
-                Uh-oh, nothing was found, try searching for something else!
-              </div>
+        {businesses.length === 0 && (
+          <div className="flex flex-col gap-4 text-center">
+            <div>
+              Uh-oh, nothing was found, try searching for something else!
             </div>
-          )}
+          </div>
+        )}
+        <div className="grid w-9/12 grid-cols-3 gap-4">
           {businesses.map(({ business: b }) => (
             <BusinessCard key={b.id} biz={b} />
           ))}
