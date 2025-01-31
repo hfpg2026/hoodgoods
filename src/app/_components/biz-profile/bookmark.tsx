@@ -32,7 +32,7 @@ export const Bookmark = ({ bizId }: { bizId: number }) => {
   })
   return (
     <div
-      className="flex cursor-pointer flex-col text-center"
+      className="flex cursor-pointer flex-col gap-1 text-center"
       onClick={() =>
         isPending
           ? true // do nothing
@@ -49,7 +49,6 @@ export const Bookmark = ({ bizId }: { bizId: number }) => {
           alt="bookmark"
           height={30}
           width={30}
-          className="m-auto"
         />
       ) : (
         <Image
@@ -57,7 +56,6 @@ export const Bookmark = ({ bizId }: { bizId: number }) => {
           alt="bookmark"
           height={30}
           width={30}
-          className="m-auto"
         />
       )}
       <div>{count}</div>

@@ -33,8 +33,10 @@ import { type Control, type UseFormSetValue } from 'react-hook-form'
 
 import { Tag } from '../tag'
 import { toTitleCase } from '../utils/str'
+import { ImageUpload } from './image-upload'
 import { Link } from './link'
 import { EditProductCardDialogContent, ProductCard } from './product-card'
+import { UploadButton } from './upload-button'
 
 type FieldPropTypes = {
   isEdit?: boolean
@@ -129,7 +131,7 @@ export const PostalCodeField = ({
       )}
     />
   ) : nearestMrt && nearestMrtDistance ? (
-    <div className="pt-2 text-sm italic">
+    <div className="pt-2 text-sm">
       📍{' '}
       {Number(nearestMrtDistance) < 1000
         ? Number(nearestMrtDistance).toFixed(0) + 'm'
@@ -215,7 +217,7 @@ export const LinkField = ({
     setValue('links', linksArr)
   }
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex gap-3">
       {values.map((l, idx) => (
         <Link key={idx} href={l} />
       ))}
@@ -371,6 +373,39 @@ export const ProductsField = ({
           />
         </Dialog>
       )}
+    </div>
+  )
+}
+
+// TODO: image upload
+export const ImagesField = ({
+  biz,
+  isEdit,
+}: {
+  biz: Business
+  isEdit?: boolean
+}) => {
+  const onUpload = useCallback(() => {}, [])
+
+  return (
+    <div className="flex gap-2">
+      <div className="flex flex-col gap-2">
+        <div className="h-16 w-16 bg-primary"> a</div>
+        <div className="h-16 w-16 bg-primary"> a</div>
+        <div className="h-16 w-16 bg-primary"> a</div>
+        <div className="h-16 w-16 bg-primary"> a</div>
+        {isEdit && (
+          <UploadButton
+            bizId={1}
+            onUpload={onUpload}
+            text="+"
+            className="h-16 w-16 cursor-pointer place-content-center bg-primary text-center text-xl text-primary-foreground"
+          />
+        )}
+      </div>
+      <div className="">
+        <div className="h-72 w-72 bg-primary">b</div>
+      </div>
     </div>
   )
 }
