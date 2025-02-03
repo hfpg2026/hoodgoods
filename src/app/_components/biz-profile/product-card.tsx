@@ -225,6 +225,7 @@ const ImageUpload = ({
         </div>
       )}
       <UploadButton
+        inputId="product-img"
         className="h-10 w-auto cursor-pointer place-content-center rounded-md bg-primary px-2 text-center text-primary-foreground"
         bizId={bizId}
         text={imageSrc ? 'Replace Image' : `Add Image`}

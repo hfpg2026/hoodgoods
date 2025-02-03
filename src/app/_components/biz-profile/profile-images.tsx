@@ -54,21 +54,25 @@ export const ProfileImages = ({
         {images.slice(1).map((id, idx) => (
           <ImageDisplay
             key={id}
+            inputId={`img-${idx + 1}-replace`}
             isEdit={isEdit ?? false}
             bizId={biz.id}
             onClick={isEdit ? undefined : () => swapBigImage(idx + 1)}
             initialUploadId={id}
-            onUpload={(id) => onUpload(id, idx + 1)}
+            onUpload={(id) => {
+              onUpload(id, idx + 1)
+            }}
             className="h-16 w-16"
           />
         ))}
         {/* arbitary limit for no. of uploaded images */}
         {isEdit && images.length < 5 && images.length > 0 && (
           <UploadButton
+            inputId="additional-upload"
             bizId={biz.id}
             text="+"
             className="h-16 w-16 cursor-pointer place-content-center bg-primary text-center text-xl text-primary-foreground"
-            onUpload={(id) => onUpload(id)}
+            onUpload={onUpload}
           />
         )}
       </div>
@@ -77,6 +81,7 @@ export const ProfileImages = ({
         {images[0] && (
           <ImageDisplay
             key={images[0]}
+            inputId="img-0-replace"
             isEdit={isEdit ?? false}
             bizId={biz.id}
             initialUploadId={images[0]}
@@ -87,6 +92,7 @@ export const ProfileImages = ({
         )}
         {isEdit && !images[0] && (
           <UploadButton
+            inputId="img-0-upload"
             bizId={biz.id}
             text="+"
             className="h-72 w-72 cursor-pointer place-content-center bg-primary text-center text-xl text-primary-foreground"
@@ -104,6 +110,7 @@ const ImageDisplay = ({
   onUpload,
   onClick,
   initialUploadId,
+  inputId,
   // styles
   className,
   replacePosition,
@@ -113,6 +120,7 @@ const ImageDisplay = ({
   onUpload: (id: number) => void
   onClick?: VoidFunction
   initialUploadId: number
+  inputId: string
   // styles
   className?: string
   replacePosition?: string
@@ -143,6 +151,7 @@ const ImageDisplay = ({
       {isEdit && (
         <div className={cn('absolute', replacePosition ?? 'left-[-75px]')}>
           <UploadButton
+            inputId={inputId}
             className="hidden h-10 w-auto cursor-pointer place-content-center rounded-md bg-primary px-2 text-center text-primary-foreground group-hover:block"
             bizId={bizId}
             text="Replace"
