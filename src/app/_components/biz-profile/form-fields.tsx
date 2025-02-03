@@ -23,6 +23,12 @@ import { MultiSelect } from '@/components/ui/multiselect'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import {
   type BizUpdateType,
   type Business,
   type Product,
@@ -120,7 +126,19 @@ export const PostalCodeField = ({
       name="postalCode"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Postal Code</FormLabel>
+          <FormLabel>
+            <TooltipProvider delayDuration={10}>
+              <Tooltip>
+                <TooltipTrigger>Postal Code ⓘ</TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    This will not be shown to anyone else. Only nearest mrt is
+                    shown.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </FormLabel>
           <FormControl>
             <Input placeholder="Postal Code" {...field} />
           </FormControl>
@@ -129,7 +147,7 @@ export const PostalCodeField = ({
       )}
     />
   ) : nearestMrt && nearestMrtDistance ? (
-    <div className="pt-2 text-sm italic">
+    <div className="pt-2 text-sm">
       📍{' '}
       {Number(nearestMrtDistance) < 1000
         ? Number(nearestMrtDistance).toFixed(0) + 'm'
@@ -215,7 +233,7 @@ export const LinkField = ({
     setValue('links', linksArr)
   }
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex gap-3">
       {values.map((l, idx) => (
         <Link key={idx} href={l} />
       ))}
@@ -354,11 +372,23 @@ export const ProductsField = ({
     [products, setValue],
   )
 
+  if (!isEdit && products.length === 0) {
+    return (
+      <div className="w-full text-center">
+        Oops, this business hasn&apos;t listed any products yet!
+      </div>
+    )
+  }
+
   return (
-    <div className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+    <div
+      key={1}
+      className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+    >
       {products.map((p) => (
         <ProductCard key={p.id} {...p} bizId={bizId} isEdit={isEdit} />
       ))}
+
       {isEdit && (
         <Dialog>
           <DialogTrigger asChild>

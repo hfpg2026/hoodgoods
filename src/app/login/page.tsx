@@ -15,8 +15,8 @@ export default function Login() {
     <main className="flex min-h-screen w-full flex-col gap-6 bg-background pt-24">
       <div className="flex w-full place-content-center">
         <Image
-          src="/assets/logo-lg.svg"
-          width={200}
+          src="/assets/logo-rainbow.svg"
+          width={720}
           height={200}
           alt="Hood Goods"
           priority

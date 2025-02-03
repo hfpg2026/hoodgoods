@@ -4,7 +4,12 @@ import {
   protectedProcedure,
   publicProcedure,
 } from '@/server/api/trpc'
-import { businesses, products, tagsToBusinesses } from '@/server/db/schema'
+import {
+  businesses,
+  businessImages,
+  products,
+  tagsToBusinesses,
+} from '@/server/db/schema'
 import { TRPCError } from '@trpc/server'
 import {
   and,
@@ -63,7 +68,7 @@ export const businessSelectSchema = z.object({
     .object({ tag: z.object({ id: z.number(), name: z.string() }) })
     .array()
     .default([]),
-  logoId: z.number().nullable(),
+  businessImages: z.object({ uploadId: z.number() }).array().default([]),
   products: productSchema.array().default([]),
   postalCode: z.string().regex(/\d{6}/).nullable(),
   svy21X: z.string().nullable(),
@@ -83,8 +88,8 @@ const bizUpdateSchema = z.object({
   story: z.string().optional(),
   links: z.string().url().array().optional(),
   tags: z.number().array().default([]),
-  logoId: z.number().optional(),
   products: productSchema.array().default([]),
+  images: z.number().array().default([]),
   postalCode: z.string().regex(/\d{6}/),
 })
 export type BizUpdateType = z.infer<typeof bizUpdateSchema>
@@ -154,6 +159,19 @@ export const businessRouter = createTRPCRouter({
             .values(input.tags.map((t) => ({ businessId: input.id, tagId: t })))
         }
 
+        // profile images
+        await tx
+          .delete(businessImages)
+          .where(eq(businessImages.businessId, input.id))
+        // set new images
+        if (input.images.length) {
+          await tx
+            .insert(businessImages)
+            .values(
+              input.images.map((i) => ({ businessId: input.id, uploadId: i })),
+            )
+        }
+
         // delete removed products
         const currentProducts = await tx
           .select({ id: products.id })
@@ -195,10 +213,11 @@ export const businessRouter = createTRPCRouter({
         page: z.number().default(1),
         searchTerm: z.string().optional(),
         postalCode: z.string().regex(/\d{6}/).optional(),
-        tag: z
+        tags: z
           .string()
-          .optional()
-          .transform((x) => Number(x)),
+          .transform((x) => Number(x))
+          .array()
+          .optional(),
       }),
     )
     .output(
@@ -227,7 +246,9 @@ export const businessRouter = createTRPCRouter({
                 )
               : undefined,
             // tag
-            input.tag ? eq(tagsToBusinesses.tagId, input.tag) : undefined,
+            input.tags
+              ? inArray(tagsToBusinesses.tagId, input.tags)
+              : undefined,
             eq(businesses.isPublished, true),
           ),
         )
@@ -236,7 +257,7 @@ export const businessRouter = createTRPCRouter({
         .offset((input.page - 1) * input.limit)
         .$dynamic()
 
-      if (input.tag) {
+      if (input.tags) {
         const prelim = await query.innerJoin(
           tagsToBusinesses,
           eq(tagsToBusinesses.businessId, businesses.id),
@@ -296,7 +317,11 @@ export const businessRouter = createTRPCRouter({
             input.isEdit ? undefined : eq(businesses.isPublished, true),
           ),
         ),
-        with: { tagsToBusinesses: { with: { tag: true } }, products: true },
+        with: {
+          tagsToBusinesses: { with: { tag: true } },
+          products: true,
+          businessImages: true,
+        },
       })
       if (biz && ctx.session?.user.id !== biz.ownerId) {
         biz.postalCode = null

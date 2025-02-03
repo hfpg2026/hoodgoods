@@ -4,16 +4,23 @@ import { useCallback, useRef, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { generateS3ObjectKey } from '@/lib/s3'
+import { cn } from '@/lib/utils'
 import { api } from '@/trpc/react'
 
 const IMG_EXTENSIONS = ['.jpg', '.jpeg', '.png']
 
 export const UploadButton = ({
+  inputId,
   bizId,
   onUpload,
+  className,
+  text,
 }: {
+  inputId: string
   bizId: number
   onUpload?: (uploadId: number) => void
+  className?: React.ComponentProps<'label'>['className']
+  text?: string
 }) => {
   const fileInput = useRef<HTMLInputElement>(null)
   const { mutateAsync: generatePresignedurl } =
@@ -53,19 +60,21 @@ export const UploadButton = ({
     })
 
     onUpload?.(upload.id)
-  }, [bizId, generatePresignedurl, createUpload, onUpload, err])
+  }, [bizId, createUpload, onUpload, generatePresignedurl, err])
 
   return (
     <form className="flex min-w-20 place-content-center">
       <Input
-        id="file"
+        id={inputId}
         type="file"
         className="inputfile"
         accept={IMG_EXTENSIONS.join(',')}
         ref={fileInput}
         onChange={uploadFile}
       />
-      <Label htmlFor="file">💾 Upload</Label>
+      <Label htmlFor={inputId} className={cn('ml-[-16px]', className)}>
+        {text ?? '💾 Upload'}
+      </Label>
     </form>
   )
 }

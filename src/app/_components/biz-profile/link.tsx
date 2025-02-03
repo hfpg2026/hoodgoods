@@ -3,17 +3,29 @@ export const Link = ({ href }: { href: string }) => {
     const url = new URL(href)
     if (url.hostname === 'instagram.com') {
       const username = url.pathname.split('/').pop() // 'instagram.com/username'
-      return <a href={href}>📷 @{username}</a>
+      return (
+        <a href={href} className="hover:underline">
+          📷 @{username}
+        </a>
+      )
     }
 
     if (
       url.hostname === 'g.co' ||
       (url.hostname === 'google.com' && url.pathname.startsWith('/maps'))
     ) {
-      return <a href={href}>📍 See on Map</a>
+      return (
+        <a href={href} className="hover:underline">
+          📍 See on Map
+        </a>
+      )
     }
 
-    return <a href={href}>🔗 {href}</a>
+    return (
+      <a href={href} className="hover:underline">
+        🔗 {href}
+      </a>
+    )
   } catch (e) {
     console.error('Invalid URL:', href, e)
   }

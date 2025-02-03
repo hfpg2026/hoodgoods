@@ -15,6 +15,7 @@ import {
 import { Navbar } from '@/app/_components/navbar'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
 import {
   type BizUpdateType,
@@ -25,7 +26,7 @@ import { api } from '@/trpc/react'
 import { useForm } from 'react-hook-form'
 
 import { Bookmark } from './bookmark'
-import { ImageUpload } from './image-upload'
+import { ProfileImages } from './profile-images'
 
 export const BizProfilePage = ({
   biz,
@@ -48,6 +49,7 @@ export const BizProfilePage = ({
       story: biz.story ?? undefined,
       tags: biz.tagsToBusinesses.map((ttb) => ttb.tag.id),
       postalCode: biz.postalCode ?? undefined,
+      images: biz.businessImages.map((bi) => bi.uploadId),
     },
   })
   const { control, watch, getValues, setValue } = form
@@ -94,84 +96,72 @@ export const BizProfilePage = ({
         <div className="flex w-full place-content-center pt-4">
           <div className="flex w-9/12 flex-col gap-6">
             {/* biz header */}
-            <div className="flex w-full flex-wrap justify-between gap-8">
-              <div className="flex w-full max-w-screen-md gap-8">
-                {/* logo */}
-                <ImageUpload
+            <div className="flex w-full gap-8">
+              {/* images */}
+              <ProfileImages isEdit={isEdit} biz={biz} setValue={setValue} />
+
+              {/* name & description */}
+              <div className="flex w-full grow flex-col gap-3">
+                <NameField isEdit={isEdit} value={biz.name} control={control} />
+                <DescriptionField
                   isEdit={isEdit}
-                  bizId={biz.id}
-                  uploadId={biz.logoId}
-                  onUpload={(uploadId) => setValue('logoId', uploadId)}
+                  value={biz.description ?? ''}
+                  control={control}
+                />
+                <PostalCodeField
+                  isEdit={isEdit}
+                  control={control}
+                  nearestMrt={biz.nearestMrt}
+                  nearestMrtDistance={biz.nearestMrtDistance}
                 />
 
-                {/* name & description */}
-                <div className="flex w-full flex-col gap-2 self-center">
-                  <NameField
-                    isEdit={isEdit}
-                    value={biz.name}
-                    control={control}
-                  />
-                  <DescriptionField
-                    isEdit={isEdit}
-                    value={biz.description ?? ''}
-                    control={control}
-                  />
-                  <PostalCodeField
-                    isEdit={isEdit}
-                    control={control}
-                    nearestMrt={biz.nearestMrt}
-                    nearestMrtDistance={biz.nearestMrtDistance}
-                  />
-                </div>
-              </div>
+                {/* tags */}
+                <TagsField
+                  isEdit={isEdit}
+                  tagList={tagList}
+                  values={tagsLocal ?? []}
+                  setValue={setValue}
+                />
 
-              {/* links */}
-              <div className="flex min-w-40 gap-4 self-center">
+                {/* links */}
                 <LinkField
                   isEdit={isEdit}
                   values={linksLocal ?? []}
                   setValue={setValue}
                 />
+              </div>
+
+              <div className="flex min-w-10">
                 {!isEdit && <Bookmark bizId={biz.id} />}
               </div>
             </div>
-
-            {/* tags */}
-            <div className="flex w-full gap-4">
-              <TagsField
-                isEdit={isEdit}
-                tagList={tagList}
-                values={tagsLocal ?? []}
-                setValue={setValue}
-              />
-            </div>
-
-            {/* product highlights */}
-            <div className="flex flex-col gap-2">
-              <div className="text-lg font-bold text-primary">
-                🌈 Product Highlights
-              </div>
-              <ProductsField
-                products={biz.products}
-                bizId={biz.id}
-                isEdit={isEdit}
-                setValue={setValue}
-              />
-            </div>
-
-            {/* story */}
-            {(biz.story ?? isEdit) && (
-              <div className="flex flex-col gap-2">
-                <div className="text-lg font-bold text-primary">
-                  📖 Our Story
-                </div>
+            {/* tabs */}
+            <Tabs defaultValue="highlights" className="w-full">
+              <TabsList className="w-full bg-accent text-accent-foreground">
+                {/*  eslint-disable-next-line  */}
+                {(isEdit || biz.story) && (
+                  <TabsTrigger value="story">📖 Our Story</TabsTrigger>
+                )}
+                <TabsTrigger value="highlights">
+                  🌈 Product Highlights
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="story">
                 <StoryField
                   isEdit={isEdit}
                   control={control}
                   value={biz.story ?? ''}
                 />
-              </div>
-            )}
+              </TabsContent>
+              <TabsContent value="highlights">
+                <ProductsField
+                  products={biz.products}
+                  bizId={biz.id}
+                  isEdit={isEdit}
+                  setValue={setValue}
+                />
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </Form>

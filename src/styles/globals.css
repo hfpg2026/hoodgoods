@@ -14,9 +14,9 @@
     --popover-foreground: 222.2 47.4% 11.2%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --primary: 15, 35%, 35%;
+    --primary: 7, 70%, 56%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
+    --secondary: 28, 65%, 88%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --accent: 28, 65%, 88%;
     --accent-foreground: 222.2 47.4% 11.2%;
@@ -24,6 +24,12 @@
     --destructive-foreground: 210 40% 98%;
     --ring: 215 20.2% 65.1%;
     --radius: 0.5rem;
+    --white: 0 0% 100%;
+    --black: 0 0% 0%;
+    --green: 176, 46%, 59%;
+    --yellow: 38, 93%, 73%;
+    --orange: 14, 89%, 66%;
+    --red: 7, 70%, 56%;
   }
 
   .dark {

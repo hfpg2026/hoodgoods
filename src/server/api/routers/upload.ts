@@ -48,13 +48,13 @@ export const uploadRouter = createTRPCRouter({
 
   get: publicProcedure
     .input(z.object({ id: z.number(), businessId: z.number() }))
-    .output(z.object({ url: z.string() }))
+    .output(z.object({ url: z.string(), name: z.string() }))
     .query(async ({ ctx, input }) => {
       const upload = await ctx.db.query.uploads.findFirst({
         where: eq(uploads.id, input.id),
       })
       if (!upload) throw new TRPCError({ code: 'NOT_FOUND' })
       const url = await getObjectUrl(upload.s3ObjectKey)
-      return { url }
+      return { url, name: upload.name }
     }),
 })

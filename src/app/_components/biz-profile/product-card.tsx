@@ -25,7 +25,7 @@ import { type Product } from '@/server/api/routers/business'
 import { api } from '@/trpc/react'
 import { useForm } from 'react-hook-form'
 
-import { ImageUpload } from './image-upload'
+import { UploadButton } from './upload-button'
 
 export const ProductCard = ({
   isEdit,
@@ -43,16 +43,27 @@ export const ProductCard = ({
   )
 
   return (
-    <div className="flex h-full flex-col gap-2 rounded-lg bg-accent p-4 shadow-md">
+    <div className="flex h-full flex-col gap-2 rounded-lg bg-accent shadow-md">
       <div className="grow-1 self-center">
-        <Image
-          src={imageSrc?.url ?? '/assets/paperbag.svg'}
-          alt={product.name}
-          width={200}
-          height={200}
-        />
+        {imageSrc ? (
+          <picture>
+            <img
+              src={imageSrc.url}
+              className="object-cover"
+              alt={imageSrc.name}
+            />
+          </picture>
+        ) : (
+          <Image
+            src="/assets/paperbag.svg"
+            height={80}
+            width={80}
+            className="relative object-contain pt-2"
+            alt="no-image"
+          />
+        )}
       </div>
-      <div className="flex grow-0 flex-col gap-1">
+      <div className="flex grow-0 flex-col gap-2 px-4 pb-4">
         <div>{product.name}</div>
         <div className="italic">{product.description}</div>
         {isEdit && (
@@ -121,10 +132,11 @@ export const EditProductCardDialogContent = ({
       <Form {...form}>
         <div className="flex flex-col gap-2 p-2">
           <ImageUpload
-            isEdit
             bizId={bizId}
-            uploadId={product?.imageId}
-            onUpload={(uploadId) => setValue('imageId', uploadId)}
+            initialUploadId={product?.imageId ?? undefined}
+            onUpload={(uploadId) => {
+              setValue('imageId', uploadId)
+            }}
           />
           {/* name */}
           <FormField
@@ -178,5 +190,50 @@ export const EditProductCardDialogContent = ({
         </DialogClose>
       </DialogFooter>
     </DialogContent>
+  )
+}
+
+const ImageUpload = ({
+  bizId,
+  initialUploadId,
+  onUpload,
+}: {
+  bizId: number
+  initialUploadId?: number
+  onUpload?: (id: number) => void
+}) => {
+  const [uploadId, setUploadId] = useState(initialUploadId)
+  const { data: imageSrc } = api.upload.get.useQuery(
+    {
+      id: uploadId ?? 0, // should not run
+      businessId: bizId ?? 0,
+    },
+    { enabled: !!uploadId && !!bizId },
+  )
+
+  return (
+    <>
+      {imageSrc && (
+        <div className="h-auto w-full">
+          <picture>
+            <img
+              src={imageSrc.url}
+              className="object-cover"
+              alt={imageSrc.name}
+            />
+          </picture>
+        </div>
+      )}
+      <UploadButton
+        inputId="product-img"
+        className="h-10 w-auto cursor-pointer place-content-center rounded-md bg-primary px-2 text-center text-primary-foreground"
+        bizId={bizId}
+        text={imageSrc ? 'Replace Image' : `Add Image`}
+        onUpload={(uploadId) => {
+          setUploadId(uploadId)
+          onUpload?.(uploadId)
+        }}
+      />
+    </>
   )
 }
