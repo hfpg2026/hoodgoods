@@ -42,31 +42,33 @@ export const SearchSidebar = ({ tags }: { tags: Tag[] }) => {
   }, [selectedTags])
 
   return (
-    <div className="flex w-full max-w-[300px] gap-4 px-8 md:flex-col">
-      <div className="flex flex-col gap-2">
+    <div className="flex w-full gap-4 px-8 md:max-w-[300px] md:flex-col">
+      <div className="flex w-full flex-col gap-2">
         <div className="font-bold">Categories</div>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="all"
-            checked={selectedTags.size === tags.length}
-            onClick={onChangeAllTags}
-          />
-          <label htmlFor="terms" className="text-sm leading-none">
-            All Categories
-          </label>
-        </div>
-        {tags.map(({ id, name }) => (
-          <div className="flex items-center space-x-2" key={id}>
+        <div className="flex w-full flex-wrap gap-2 md:flex-col">
+          <div className="flex items-center space-x-2">
             <Checkbox
-              id={name}
-              checked={selectedTags.has(id.toString())}
-              onCheckedChange={(isChecked) => onChangeTag(!!isChecked, id)}
+              id="all"
+              checked={selectedTags.size === tags.length}
+              onClick={onChangeAllTags}
             />
-            <label htmlFor={name} className="text-sm leading-none">
-              {name}
+            <label htmlFor="terms" className="text-sm leading-none">
+              All Categories
             </label>
           </div>
-        ))}
+          {tags.map(({ id, name }) => (
+            <div className="flex items-center space-x-2" key={id}>
+              <Checkbox
+                id={name}
+                checked={selectedTags.has(id.toString())}
+                onCheckedChange={(isChecked) => onChangeTag(!!isChecked, id)}
+              />
+              <label htmlFor={name} className="text-sm leading-none">
+                {name}
+              </label>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
