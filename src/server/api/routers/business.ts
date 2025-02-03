@@ -71,10 +71,10 @@ export const businessSelectSchema = z.object({
   businessImages: z.object({ uploadId: z.number() }).array().default([]),
   products: productSchema.array().default([]),
   postalCode: z.string().regex(/\d{6}/).nullable(),
-  svy21X: z.string().nullable(),
-  svy21Y: z.string().nullable(),
+  svy21X: z.coerce.string().nullable(),
+  svy21Y: z.coerce.string().nullable(),
   nearestMrt: z.string().nullable(),
-  nearestMrtDistance: z.string().nullable(),
+  nearestMrtDistance: z.coerce.string().nullable(),
 })
 export type Business = z.infer<typeof businessSelectSchema>
 

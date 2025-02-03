@@ -17,7 +17,7 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <main className="flex min-h-screen w-full flex-col gap-2 bg-background pb-6 pt-2">
+      <main className="flex min-h-screen w-full flex-col gap-2 bg-background px-2 pb-6 pt-3">
         <div className="flex w-full items-center justify-end px-6">
           <NavMenu />
         </div>
@@ -38,7 +38,7 @@ export default async function Home() {
         </div>
         {/* tags */}
         <div className="flex w-full place-content-center">
-          <div className="flex w-9/12 flex-wrap place-content-center gap-2">
+          <div className="flex w-full flex-wrap place-content-center gap-2 md:w-9/12">
             {tags.map((t) => (
               <Tag key={t.id} tag={t} />
             ))}
@@ -46,9 +46,9 @@ export default async function Home() {
         </div>
         {/* new businessess */}
         <div className="flex w-full place-content-center pt-4">
-          <div className="flex w-9/12 flex-col gap-4">
+          <div className="flex w-full flex-col gap-4 md:w-9/12">
             <div className="text-lg font-bold">💖 New Kids on the Block</div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {businesses.map(({ business: b }) => (
                 <BusinessCard key={b.id} biz={b} />
               ))}

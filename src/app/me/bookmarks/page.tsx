@@ -11,8 +11,9 @@ export default async function Bookmarks() {
       <Navbar showSearch={false} />
 
       {/* businessess */}
-      <div className="flex w-full place-content-center pt-4">
-        <div className="flex w-9/12 flex-col gap-4">
+      <div className="flex w-full place-content-center px-3 pt-4">
+        <div className="flex w-full flex-col gap-4 md:w-9/12">
+          <div className="text-lg font-bold">✨ My Bookmarks</div>
           {bookmarks.length === 0 && (
             <div className="flex flex-col gap-4 text-center">
               <div>
@@ -22,9 +23,11 @@ export default async function Bookmarks() {
               <Searchbar />
             </div>
           )}
-          {bookmarks.map(({ business: b }) => (
-            <BusinessCard key={b.id} biz={b} />
-          ))}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+            {bookmarks.map(({ business: b }) => (
+              <BusinessCard key={b.id} biz={b} />
+            ))}
+          </div>
         </div>
       </div>
     </main>
