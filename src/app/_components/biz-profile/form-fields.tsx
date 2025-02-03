@@ -23,6 +23,12 @@ import { MultiSelect } from '@/components/ui/multiselect'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import {
   type BizUpdateType,
   type Business,
   type Product,
@@ -120,7 +126,19 @@ export const PostalCodeField = ({
       name="postalCode"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Postal Code</FormLabel>
+          <FormLabel>
+            <TooltipProvider delayDuration={10}>
+              <Tooltip>
+                <TooltipTrigger>Postal Code ⓘ</TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    This will not be shown to anyone else. Only nearest mrt is
+                    shown.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </FormLabel>
           <FormControl>
             <Input placeholder="Postal Code" {...field} />
           </FormControl>
