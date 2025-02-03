@@ -33,7 +33,6 @@ import { type Control, type UseFormSetValue } from 'react-hook-form'
 
 import { Tag } from '../tag'
 import { toTitleCase } from '../utils/str'
-import { ImageUpload } from './image-upload'
 import { Link } from './link'
 import { EditProductCardDialogContent, ProductCard } from './product-card'
 import { UploadButton } from './upload-button'
@@ -385,7 +384,7 @@ export const ImagesField = ({
   biz: Business
   isEdit?: boolean
 }) => {
-  const onUpload = useCallback(() => {}, [])
+  // const onUpload = useCallback(() => {}, [])
 
   return (
     <div className="flex gap-2">
@@ -397,7 +396,6 @@ export const ImagesField = ({
         {isEdit && (
           <UploadButton
             bizId={1}
-            onUpload={onUpload}
             text="+"
             className="h-16 w-16 cursor-pointer place-content-center bg-primary text-center text-xl text-primary-foreground"
           />

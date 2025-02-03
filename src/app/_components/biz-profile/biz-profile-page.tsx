@@ -27,7 +27,6 @@ import { api } from '@/trpc/react'
 import { useForm } from 'react-hook-form'
 
 import { Bookmark } from './bookmark'
-import { ImageUpload } from './image-upload'
 
 export const BizProfilePage = ({
   biz,
@@ -139,6 +138,7 @@ export const BizProfilePage = ({
             {/* tabs */}
             <Tabs defaultValue="highlights" className="w-full">
               <TabsList className="w-full bg-accent text-accent-foreground">
+                {/*  eslint-disable-next-line  */}
                 {(isEdit || biz.story) && (
                   <TabsTrigger value="story">📖 Our Story</TabsTrigger>
                 )}

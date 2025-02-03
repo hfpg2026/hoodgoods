@@ -8,10 +8,10 @@ import { Input } from '@/components/ui/input'
 import { useSession } from 'next-auth/react'
 
 export default function Code() {
+  const router = useRouter()
+
   const session = useSession()
   if (session.status !== 'authenticated') return <></>
-
-  const router = useRouter()
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-6 bg-background pb-6 pt-2">

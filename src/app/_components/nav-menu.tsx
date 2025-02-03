@@ -37,7 +37,7 @@ export const NavMenu = () => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {biz && biz.id && (
+        {biz?.id && (
           <>
             <DropdownMenuItem
               className="cursor-pointer"

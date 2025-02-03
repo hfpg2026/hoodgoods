@@ -58,7 +58,7 @@ export const UploadButton = ({
     })
 
     onUpload?.(upload.id)
-  }, [bizId, createUpload, onUpload, generatePresignedurl])
+  }, [bizId, createUpload, onUpload, generatePresignedurl, err])
 
   return (
     <form className="flex min-w-20 place-content-center">

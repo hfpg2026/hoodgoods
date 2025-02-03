@@ -2,7 +2,6 @@ import { api } from '@/trpc/server'
 
 import { BusinessCard } from '../_components/business-card'
 import { Navbar } from '../_components/navbar'
-import { Tag } from '../_components/tag'
 
 export default async function Search({
   searchParams,
