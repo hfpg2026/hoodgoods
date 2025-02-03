@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Tag } from '@/server/db/schema'
+import { type Tag } from '@/server/db/schema'
 
 export const SearchSidebar = ({ tags }: { tags: Tag[] }) => {
   const router = useRouter()
