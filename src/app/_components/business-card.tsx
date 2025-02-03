@@ -8,14 +8,21 @@ import { api } from '@/trpc/react'
 import { toTitleCase } from './utils/str'
 
 export const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
-  const { id, logoId, name, description, nearestMrt, nearestMrtDistance } = biz
+  const {
+    id,
+    businessImages,
+    name,
+    description,
+    nearestMrt,
+    nearestMrtDistance,
+  } = biz
   const router = useRouter()
   const { data: imageSrc } = api.upload.get.useQuery(
     {
-      id: logoId ?? 0, // should not run
+      id: businessImages?.[0]?.uploadId ?? 0, // should not run
       businessId: id ?? 0,
     },
-    { enabled: !!logoId && !!id },
+    { enabled: !!businessImages?.[0]?.uploadId && !!id },
   )
 
   return (
@@ -25,7 +32,13 @@ export const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
     >
       {imageSrc?.url ? (
         <picture>
-          <img src={imageSrc.url} alt={name} width={400} height={100} />
+          <img
+            src={imageSrc.url}
+            alt={name}
+            width={400}
+            height={100}
+            className="object-cover"
+          />
         </picture>
       ) : (
         <div className="self-center pt-3">

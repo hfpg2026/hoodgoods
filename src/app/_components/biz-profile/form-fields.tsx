@@ -35,7 +35,6 @@ import { Tag } from '../tag'
 import { toTitleCase } from '../utils/str'
 import { Link } from './link'
 import { EditProductCardDialogContent, ProductCard } from './product-card'
-import { UploadButton } from './upload-button'
 
 type FieldPropTypes = {
   isEdit?: boolean
@@ -355,11 +354,23 @@ export const ProductsField = ({
     [products, setValue],
   )
 
+  if (!isEdit && products.length === 0) {
+    return (
+      <div className="w-full text-center">
+        Oops, this business hasn&apos;t listed any products yet!
+      </div>
+    )
+  }
+
   return (
-    <div className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+    <div
+      key={1}
+      className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+    >
       {products.map((p) => (
         <ProductCard key={p.id} {...p} bizId={bizId} isEdit={isEdit} />
       ))}
+
       {isEdit && (
         <Dialog>
           <DialogTrigger asChild>
@@ -372,38 +383,6 @@ export const ProductsField = ({
           />
         </Dialog>
       )}
-    </div>
-  )
-}
-
-// TODO: image upload
-export const ImagesField = ({
-  biz,
-  isEdit,
-}: {
-  biz: Business
-  isEdit?: boolean
-}) => {
-  // const onUpload = useCallback(() => {}, [])
-
-  return (
-    <div className="flex gap-2">
-      <div className="flex flex-col gap-2">
-        <div className="h-16 w-16 bg-primary"> a</div>
-        <div className="h-16 w-16 bg-primary"> a</div>
-        <div className="h-16 w-16 bg-primary"> a</div>
-        <div className="h-16 w-16 bg-primary"> a</div>
-        {isEdit && (
-          <UploadButton
-            bizId={1}
-            text="+"
-            className="h-16 w-16 cursor-pointer place-content-center bg-primary text-center text-xl text-primary-foreground"
-          />
-        )}
-      </div>
-      <div className="">
-        <div className="h-72 w-72 bg-primary">b</div>
-      </div>
     </div>
   )
 }

@@ -4,7 +4,12 @@ import {
   protectedProcedure,
   publicProcedure,
 } from '@/server/api/trpc'
-import { businesses, products, tagsToBusinesses } from '@/server/db/schema'
+import {
+  businesses,
+  businessImages,
+  products,
+  tagsToBusinesses,
+} from '@/server/db/schema'
 import { TRPCError } from '@trpc/server'
 import {
   and,
@@ -63,7 +68,7 @@ export const businessSelectSchema = z.object({
     .object({ tag: z.object({ id: z.number(), name: z.string() }) })
     .array()
     .default([]),
-  logoId: z.number().nullable(),
+  businessImages: z.object({ uploadId: z.number() }).array().default([]),
   products: productSchema.array().default([]),
   postalCode: z.string().regex(/\d{6}/).nullable(),
   svy21X: z.string().nullable(),
@@ -83,8 +88,8 @@ const bizUpdateSchema = z.object({
   story: z.string().optional(),
   links: z.string().url().array().optional(),
   tags: z.number().array().default([]),
-  logoId: z.number().optional(),
   products: productSchema.array().default([]),
+  images: z.number().array().default([]),
   postalCode: z.string().regex(/\d{6}/),
 })
 export type BizUpdateType = z.infer<typeof bizUpdateSchema>
@@ -152,6 +157,19 @@ export const businessRouter = createTRPCRouter({
           await tx
             .insert(tagsToBusinesses)
             .values(input.tags.map((t) => ({ businessId: input.id, tagId: t })))
+        }
+
+        // profile images
+        await tx
+          .delete(businessImages)
+          .where(eq(businessImages.businessId, input.id))
+        // set new images
+        if (input.images.length) {
+          await tx
+            .insert(businessImages)
+            .values(
+              input.images.map((i) => ({ businessId: input.id, uploadId: i })),
+            )
         }
 
         // delete removed products
@@ -296,7 +314,11 @@ export const businessRouter = createTRPCRouter({
             input.isEdit ? undefined : eq(businesses.isPublished, true),
           ),
         ),
-        with: { tagsToBusinesses: { with: { tag: true } }, products: true },
+        with: {
+          tagsToBusinesses: { with: { tag: true } },
+          products: true,
+          businessImages: true,
+        },
       })
       if (biz && ctx.session?.user.id !== biz.ownerId) {
         biz.postalCode = null

@@ -47,6 +47,32 @@ export const bookmarksRelations = relations(bookmarks, ({ one }) => {
   }
 })
 
+// ----- biz images -----
+export const businessImages = createTable(
+  'business_images',
+  {
+    uploadId: integer('upload_id')
+      .references(() => uploads.id)
+      .notNull(),
+    businessId: integer('business_id')
+      .references(() => businesses.id)
+      .notNull(),
+  },
+  (b) => [
+    primaryKey({ columns: [b.uploadId, b.businessId] }),
+    index('business_images_id_idx').on(b.businessId),
+  ],
+)
+
+export const businessImagesRelations = relations(businessImages, ({ one }) => {
+  return {
+    business: one(businesses, {
+      fields: [businessImages.businessId],
+      references: [businesses.id],
+    }),
+  }
+})
+
 // ----- uploads -----
 export const uploads = createTable('uploads', {
   id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
@@ -142,7 +168,6 @@ export const businesses = createTable(
       .notNull()
       .default(sql`'{}'::text[]`),
     story: text('story'),
-    logoId: integer('logo_id').references(() => uploads.id),
     ownerId: varchar('owner_id', { length: 255 })
       .notNull()
       .references(() => users.id),
@@ -173,8 +198,8 @@ export const businesses = createTable(
 export const businessRelations = relations(businesses, ({ one, many }) => ({
   user: one(users, { fields: [businesses.ownerId], references: [users.id] }),
   tagsToBusinesses: many(tagsToBusinesses),
-  logo: one(uploads, { fields: [businesses.logoId], references: [uploads.id] }),
   products: many(products),
+  businessImages: many(businessImages),
 }))
 
 // ----- user -----

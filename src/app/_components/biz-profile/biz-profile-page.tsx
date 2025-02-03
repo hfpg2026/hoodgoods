@@ -4,7 +4,6 @@ import { useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   DescriptionField,
-  ImagesField,
   LinkField,
   NameField,
   PostalCodeField,
@@ -27,6 +26,7 @@ import { api } from '@/trpc/react'
 import { useForm } from 'react-hook-form'
 
 import { Bookmark } from './bookmark'
+import { ProfileImages } from './profile-images'
 
 export const BizProfilePage = ({
   biz,
@@ -49,6 +49,7 @@ export const BizProfilePage = ({
       story: biz.story ?? undefined,
       tags: biz.tagsToBusinesses.map((ttb) => ttb.tag.id),
       postalCode: biz.postalCode ?? undefined,
+      images: biz.businessImages.map((bi) => bi.uploadId),
     },
   })
   const { control, watch, getValues, setValue } = form
@@ -97,7 +98,7 @@ export const BizProfilePage = ({
             {/* biz header */}
             <div className="flex w-full gap-8">
               {/* images */}
-              <ImagesField isEdit={isEdit} biz={biz} />
+              <ProfileImages isEdit={isEdit} biz={biz} setValue={setValue} />
 
               {/* name & description */}
               <div className="flex w-full grow flex-col gap-3">
@@ -134,7 +135,6 @@ export const BizProfilePage = ({
                 {!isEdit && <Bookmark bizId={biz.id} />}
               </div>
             </div>
-
             {/* tabs */}
             <Tabs defaultValue="highlights" className="w-full">
               <TabsList className="w-full bg-accent text-accent-foreground">
