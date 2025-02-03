@@ -213,10 +213,11 @@ export const businessRouter = createTRPCRouter({
         page: z.number().default(1),
         searchTerm: z.string().optional(),
         postalCode: z.string().regex(/\d{6}/).optional(),
-        tag: z
+        tags: z
           .string()
-          .optional()
-          .transform((x) => Number(x)),
+          .transform((x) => Number(x))
+          .array()
+          .optional(),
       }),
     )
     .output(
@@ -245,7 +246,9 @@ export const businessRouter = createTRPCRouter({
                 )
               : undefined,
             // tag
-            input.tag ? eq(tagsToBusinesses.tagId, input.tag) : undefined,
+            input.tags
+              ? inArray(tagsToBusinesses.tagId, input.tags)
+              : undefined,
             eq(businesses.isPublished, true),
           ),
         )
@@ -254,7 +257,7 @@ export const businessRouter = createTRPCRouter({
         .offset((input.page - 1) * input.limit)
         .$dynamic()
 
-      if (input.tag) {
+      if (input.tags) {
         const prelim = await query.innerJoin(
           tagsToBusinesses,
           eq(tagsToBusinesses.businessId, businesses.id),
