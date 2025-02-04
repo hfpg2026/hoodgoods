@@ -42,7 +42,7 @@ export const SearchSidebar = ({ tags }: { tags: Tag[] }) => {
   }, [selectedTags, router, searchParams])
 
   return (
-    <div className="flex w-full gap-4 px-8 md:max-w-[300px] md:flex-col">
+    <div className="flex w-full gap-4 px-8 md:max-w-[250px] md:flex-col lg:max-w-[300px]">
       <div className="flex w-full flex-col gap-2">
         <div className="font-bold">Categories</div>
         <div className="flex w-full flex-wrap gap-2 md:flex-col">
