@@ -38,7 +38,7 @@ export default function Search({}: {
     <main className="flex min-h-screen w-full flex-col gap-2 pb-6 pt-2">
       <Navbar initialSearch={searchTerm} initialPostalCode={postalCode} />
 
-      <div className="flex w-full flex-wrap gap-8 pt-4">
+      <div className="flex w-full flex-wrap gap-8 pt-4 md:flex-nowrap">
         {/* sidebar */}
         <SearchSidebar tags={allTags} />
         {/* businessess */}
@@ -49,7 +49,7 @@ export default function Search({}: {
             </div>
           </div>
         ) : (
-          <div className="grid w-full grid-cols-3 gap-4 px-4 md:w-9/12">
+          <div className="grid w-full grid-cols-1 gap-4 px-4 sm:grid-cols-2 md:grid-cols-3">
             {businesses.map((b) => (
               <BusinessCard key={b.id} biz={b} />
             ))}
