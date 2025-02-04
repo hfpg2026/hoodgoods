@@ -44,8 +44,8 @@ export const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
         <div className="self-center pt-3">
           <Image
             src="/assets/paperbag.svg"
-            height={56}
-            width={56}
+            height={120}
+            width={120}
             alt={name ?? ''}
           />
         </div>

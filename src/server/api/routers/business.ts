@@ -1,4 +1,5 @@
 import crypto from 'node:crypto'
+import { resourceLimits } from 'node:worker_threads'
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -235,7 +236,7 @@ export const businessRouter = createTRPCRouter({
       }
       const { x, y } = input.postalCode
         ? await postalCodeToSvy21(input.postalCode)
-        : { x: '0', y: '0' }
+        : { x: '1000000', y: '10000000' }
 
       const where = and(
         // search term
@@ -258,33 +259,32 @@ export const businessRouter = createTRPCRouter({
         eq(businesses.isPublished, true),
       )
 
-      const [countResult] = await db
+      const [countResult] = await ctx.db
         .select({ totalCount: count() })
         .from(businesses)
         .where(where)
-      const result = await ctx.db
-        .select({
-          ...getTableColumns(businesses),
-          ...(input.postalCode
-            ? {
-                nearestDistance: sql<number>`SQRT(POW(${businesses.svy21X} - ${x}, 2) + POW(${businesses.svy21Y}  - ${y}, 2)) AS nearestDistance`,
-              }
-            : {}),
-        })
-        .from(businesses)
-        .where(where)
-        .orderBy(
-          input.postalCode
-            ? desc(sql`nearestDistance`)
-            : orderFn(orderColMap[input.orderKey]),
-        )
-        .limit(input.limit)
-        .offset((input.page - 1) * input.limit)
 
-      const bizResults = result.map((b) => ({ ...b, postalCode: null }))
+      const result = await ctx.db.query.businesses.findMany({
+        where,
+        extras: {
+          nearestDistance:
+            sql<number>`SQRT(POW(${businesses.svy21X} - ${x}, 2) + POW(${businesses.svy21Y}  - ${y}, 2))`.as(
+              'nearest_distance',
+            ),
+        },
+        with: {
+          businessImages: { limit: 1 },
+        },
+        orderBy: input.postalCode
+          ? sql`nearest_distance asc nulls last`
+          : orderFn(orderColMap[input.orderKey]),
+        limit: input.limit,
+        offset: (input.page - 1) * input.limit,
+      })
+
       return {
-        totalCount: countResult?.totalCount ?? 0,
-        businesses: bizResults,
+        totalCount: countResult?.totalCount ?? result.length,
+        businesses: result.map((b) => ({ ...b, postalCode: null })),
       }
     }),
 
