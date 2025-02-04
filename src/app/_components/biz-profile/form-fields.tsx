@@ -383,7 +383,7 @@ export const ProductsField = ({
   return (
     <div
       key={1}
-      className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
     >
       {products.map((p) => (
         <ProductCard key={p.id} {...p} bizId={bizId} isEdit={isEdit} />

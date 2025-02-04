@@ -48,7 +48,7 @@ export default async function Home() {
         <div className="flex w-full place-content-center pt-4">
           <div className="flex w-full flex-col gap-4 md:w-9/12">
             <div className="text-lg font-bold">💖 New Kids on the Block</div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {businesses.map((b) => (
                 <BusinessCard key={b.id} biz={b} />
               ))}
