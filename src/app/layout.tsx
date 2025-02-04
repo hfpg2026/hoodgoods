@@ -1,5 +1,6 @@
 import '@/styles/globals.css'
 
+import { Suspense } from 'react'
 import { type Metadata } from 'next'
 import { Toaster } from '@/components/ui/toaster'
 import { TRPCReactProvider } from '@/trpc/react'
@@ -20,13 +21,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-        <HackathonBanner />
-        <SessionProvider>
-          <TRPCReactProvider>
-            {children}
-            <Toaster />
-          </TRPCReactProvider>
-        </SessionProvider>
+        <Suspense>
+          <HackathonBanner />
+          <SessionProvider>
+            <TRPCReactProvider>
+              {children}
+              <Toaster />
+            </TRPCReactProvider>
+          </SessionProvider>
+        </Suspense>
       </body>
     </html>
   )

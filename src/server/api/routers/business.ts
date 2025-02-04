@@ -14,6 +14,7 @@ import { TRPCError } from '@trpc/server'
 import {
   and,
   asc,
+  count,
   desc,
   eq,
   getTableColumns,
@@ -28,7 +29,7 @@ import { type PgTable } from 'drizzle-orm/pg-core'
 import { type SQLiteTable } from 'drizzle-orm/sqlite-core'
 import { z } from 'zod'
 
-import { getNearestMrt, postalCodeSortFn, postalCodeToSvy21 } from '../onemap'
+import { getNearestMrt, postalCodeToSvy21 } from '../onemap'
 
 const buildConflictUpdateColumns = <
   T extends PgTable | SQLiteTable,
@@ -221,78 +222,68 @@ export const businessRouter = createTRPCRouter({
       }),
     )
     .output(
-      z
-        .object({
-          business: businessSelectSchema,
-        })
-        .array(),
+      z.object({
+        totalCount: z.number(),
+        businesses: businessSelectSchema.array().default([]),
+      }),
     )
     .query(async ({ ctx, input }) => {
       const orderFn = input.order === 'asc' ? asc : desc
       const orderColMap: Record<(typeof input)['orderKey'], AnyColumn> = {
         createdAt: businesses.createdAt,
       }
+      const { x, y } = input.postalCode
+        ? await postalCodeToSvy21(input.postalCode)
+        : { x: '1000000', y: '10000000' }
 
-      const query = ctx.db
-        .select()
-        .from(businesses)
-        .where(
-          and(
-            // search term
-            input.searchTerm
-              ? or(
-                  ilike(businesses.description, `%${input.searchTerm}%`),
-                  ilike(businesses.name, `%${input.searchTerm}%`),
-                )
-              : undefined,
-            // tag
-            input.tags
-              ? inArray(tagsToBusinesses.tagId, input.tags)
-              : undefined,
-            eq(businesses.isPublished, true),
-          ),
-        )
-        .orderBy(orderFn(orderColMap[input.orderKey]))
-        .limit(input.limit)
-        .offset((input.page - 1) * input.limit)
-        .$dynamic()
-
-      if (input.tags) {
-        const prelim = await query.innerJoin(
-          tagsToBusinesses,
-          eq(tagsToBusinesses.businessId, businesses.id),
-        )
-        return prelim.map((row) => {
-          row.business.postalCode = null
-          return row
-        })
-      }
-
-      // left join to keep data structure constant
-      const prelim = await query.leftJoin(
-        tagsToBusinesses,
-        eq(tagsToBusinesses.businessId, businesses.id),
+      const where = and(
+        // search term
+        input.searchTerm
+          ? or(
+              ilike(businesses.description, `%${input.searchTerm}%`),
+              ilike(businesses.name, `%${input.searchTerm}%`),
+            )
+          : undefined,
+        // tag
+        input.tags && input.tags.length > 0
+          ? inArray(
+              businesses.id,
+              ctx.db
+                .select({ id: tagsToBusinesses.businessId })
+                .from(tagsToBusinesses)
+                .where(inArray(tagsToBusinesses.tagId, input.tags)),
+            )
+          : undefined,
+        eq(businesses.isPublished, true),
       )
 
-      const result = prelim
-      if (input.postalCode) {
-        const { x, y } = await postalCodeToSvy21(input.postalCode)
-        result.sort(({ business: a }, { business: b }) => {
-          if (!a.postalCode && !b.postalCode) {
-            return 0
-          } else if (!a.postalCode) {
-            return 1
-          } else if (!b.postalCode) {
-            return -1
-          } else {
-            return postalCodeSortFn({ x, y })(a, b)
-          }
-        })
-      }
-      return result.map((row) => {
-        row.business.postalCode = null
-        return row
+      const [countResult] = await ctx.db
+        .select({ totalCount: count() })
+        .from(businesses)
+        .where(where)
+
+      const result = await ctx.db.query.businesses.findMany({
+        where,
+        extras: {
+          nearestDistance:
+            sql<number>`SQRT(POW(${businesses.svy21X} - ${x}, 2) + POW(${businesses.svy21Y}  - ${y}, 2))`.as(
+              'nearest_distance',
+            ),
+        },
+        with: {
+          businessImages: { limit: 1 },
+        },
+        orderBy: input.postalCode
+          ? sql`nearest_distance asc nulls last`
+          : orderFn(orderColMap[input.orderKey]),
+        limit: input.limit,
+        offset: (input.page - 1) * input.limit,
       })
+
+      return {
+        totalCount: countResult?.totalCount ?? result.length,
+        businesses: result.map((b) => ({ ...b, postalCode: null })),
+      }
     }),
 
   get: publicProcedure

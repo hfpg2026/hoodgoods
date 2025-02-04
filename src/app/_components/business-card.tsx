@@ -35,17 +35,15 @@ export const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
           <img
             src={imageSrc.url}
             alt={name}
-            width={400}
-            height={100}
-            className="object-cover"
+            className="min-h-[150px] object-cover"
           />
         </picture>
       ) : (
         <div className="self-center pt-3">
           <Image
             src="/assets/paperbag.svg"
-            height={56}
-            width={56}
+            height={100}
+            width={100}
             alt={name ?? ''}
           />
         </div>
