@@ -31,6 +31,9 @@ export const bookmarks = createTable(
     businessId: integer('business_id')
       .references(() => businesses.id)
       .notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
   },
   (b) => [
     primaryKey({ columns: [b.userId, b.businessId] }),
