@@ -1,29 +1,38 @@
-import { api } from '@/trpc/server'
+'use client'
+
+import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { api } from '@/trpc/react'
 
 import { BusinessCard } from '../_components/business-card'
 import { Navbar } from '../_components/navbar'
+import { BusinessPagination } from '../_components/pagination'
 import { SearchSidebar } from '../_components/search/sidebar'
 
-export default async function Search({
-  searchParams,
-}: {
+export default function Search({}: {
   searchParams: Promise<{
     search?: string
     postalCode?: string
-    tags?: string[]
+    tag?: string | string[]
   }>
 }) {
-  const { search: searchTerm, postalCode, tags } = await searchParams
+  const searchParams = useSearchParams()
+  const searchTerm = searchParams.get('search') ?? undefined
+  const postalCode = searchParams.get('postalCode') ?? undefined
+  const tags = searchParams.getAll('tag')
 
-  const allTags = await api.tag.findAll()
-  const businesses = await api.business.find({
+  const limit = 12
+  const [page, setPage] = useState(1)
+  const [{ businesses, totalCount }] = api.business.find.useSuspenseQuery({
     orderKey: 'createdAt',
     order: 'desc',
-    limit: 10,
+    limit, // 4 rows of 3
+    page,
     searchTerm,
     postalCode,
     tags,
   })
+  const [allTags] = api.tag.findAll.useSuspenseQuery()
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-2 pb-6 pt-2">
@@ -41,12 +50,20 @@ export default async function Search({
           </div>
         ) : (
           <div className="grid w-full grid-cols-3 gap-4 px-4 md:w-9/12">
-            {businesses.map(({ business: b }) => (
+            {businesses.map((b) => (
               <BusinessCard key={b.id} biz={b} />
             ))}
           </div>
         )}
       </div>
+
+      <BusinessPagination
+        totalPages={Math.ceil(totalCount / limit)}
+        currentPage={page}
+        onClickPrev={() => setPage((page) => page - 1)}
+        onClickNext={() => setPage((page) => page + 1)}
+        onClickPage={(p: number) => setPage(p)}
+      />
     </main>
   )
 }

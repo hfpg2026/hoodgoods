@@ -9,10 +9,10 @@ import { Tag } from './_components/tag'
 // TODO fetch from db
 export default async function Home() {
   const tags = await api.tag.findAll()
-  const businesses = await api.business.find({
+  const { businesses } = await api.business.find({
     orderKey: 'createdAt',
     order: 'desc',
-    limit: 5,
+    limit: 6,
   })
 
   return (
@@ -49,7 +49,7 @@ export default async function Home() {
           <div className="flex w-full flex-col gap-4 md:w-9/12">
             <div className="text-lg font-bold">💖 New Kids on the Block</div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-              {businesses.map(({ business: b }) => (
+              {businesses.map((b) => (
                 <BusinessCard key={b.id} biz={b} />
               ))}
             </div>

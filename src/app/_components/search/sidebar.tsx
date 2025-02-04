@@ -39,7 +39,7 @@ export const SearchSidebar = ({ tags }: { tags: Tag[] }) => {
     params.delete('tag')
     selectedTags.forEach((id) => params.append('tag', id ?? ''))
     router.push(`/search/?${params.toString()}`)
-  }, [selectedTags])
+  }, [selectedTags, router, searchParams])
 
   return (
     <div className="flex w-full gap-4 px-8 md:max-w-[300px] md:flex-col">
