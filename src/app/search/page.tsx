@@ -9,13 +9,7 @@ import { Navbar } from '../_components/navbar'
 import { BusinessPagination } from '../_components/pagination'
 import { SearchSidebar } from '../_components/search/sidebar'
 
-export default function Search({}: {
-  searchParams: Promise<{
-    search?: string
-    postalCode?: string
-    tag?: string | string[]
-  }>
-}) {
+export default function Search() {
   const searchParams = useSearchParams()
   const searchTerm = searchParams.get('search') ?? undefined
   const postalCode = searchParams.get('postalCode') ?? undefined
