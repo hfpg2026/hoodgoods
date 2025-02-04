@@ -72,9 +72,10 @@ export const bookmarkRouter = createTRPCRouter({
   getUserBookmarks: protectedProcedure
     .output(z.object({ business: businessSelectSchema }).array())
     .query(async ({ ctx }) => {
-      return await ctx.db.query.bookmarks.findMany({
+      const bms = await ctx.db.query.bookmarks.findMany({
         where: eq(bookmarks.userId, ctx.session.user.id),
         with: { business: true },
       })
+      return bms
     }),
 })

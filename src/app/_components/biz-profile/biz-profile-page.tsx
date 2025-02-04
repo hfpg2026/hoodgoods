@@ -94,27 +94,37 @@ export const BizProfilePage = ({
           </div>
         )}
         <div className="flex w-full place-content-center pt-4">
-          <div className="flex w-9/12 flex-col gap-6">
+          <div className="flex w-full flex-col gap-6 md:w-9/12">
             {/* biz header */}
-            <div className="flex w-full gap-8">
+            <div className="flex w-full flex-wrap place-content-center gap-8 px-4 md:flex-nowrap">
               {/* images */}
               <ProfileImages isEdit={isEdit} biz={biz} setValue={setValue} />
 
               {/* name & description */}
               <div className="flex w-full grow flex-col gap-3">
-                <NameField isEdit={isEdit} value={biz.name} control={control} />
-                <DescriptionField
-                  isEdit={isEdit}
-                  value={biz.description ?? ''}
-                  control={control}
-                />
-                <PostalCodeField
-                  isEdit={isEdit}
-                  control={control}
-                  nearestMrt={biz.nearestMrt}
-                  nearestMrtDistance={biz.nearestMrtDistance}
-                />
-
+                <div className="flex w-full">
+                  <div className="flex w-full grow flex-col gap-3">
+                    <NameField
+                      isEdit={isEdit}
+                      value={biz.name}
+                      control={control}
+                    />
+                    <DescriptionField
+                      isEdit={isEdit}
+                      value={biz.description ?? ''}
+                      control={control}
+                    />
+                    <PostalCodeField
+                      isEdit={isEdit}
+                      control={control}
+                      nearestMrt={biz.nearestMrt}
+                      nearestMrtDistance={biz.nearestMrtDistance}
+                    />
+                  </div>
+                  <div className="flex min-w-10 md:hidden">
+                    {!isEdit && <Bookmark bizId={biz.id} />}
+                  </div>
+                </div>
                 {/* tags */}
                 <TagsField
                   isEdit={isEdit}
@@ -131,7 +141,7 @@ export const BizProfilePage = ({
                 />
               </div>
 
-              <div className="flex min-w-10">
+              <div className="flex hidden min-w-10 md:block">
                 {!isEdit && <Bookmark bizId={biz.id} />}
               </div>
             </div>
