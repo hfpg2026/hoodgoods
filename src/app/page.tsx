@@ -8,7 +8,7 @@ import { Tag } from './_components/tag'
 
 // TODO fetch from db
 export default async function Home() {
-  const tags = await api.tag.findAll()
+  const tags = await api.tag.findAll({ type: 'category' })
   const { businesses } = await api.business.find({
     orderKey: 'createdAt',
     order: 'desc',

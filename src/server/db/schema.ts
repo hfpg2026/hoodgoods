@@ -5,6 +5,7 @@ import {
   decimal,
   index,
   integer,
+  pgEnum,
   pgTableCreator,
   primaryKey,
   text,
@@ -121,9 +122,11 @@ export const productsRelations = relations(products, ({ one }) => {
 })
 
 // ----- tag -----
+export const tagType = pgEnum('type', ['category', 'tag'])
 export const tags = createTable('tag', {
   id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
   name: varchar('name', { length: 255 }).notNull(),
+  type: tagType().notNull().default('tag'),
 })
 
 export const tagsRelations = relations(tags, ({ many }) => ({
