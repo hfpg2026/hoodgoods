@@ -32,7 +32,7 @@ export const Bookmark = ({ bizId }: { bizId: number }) => {
   })
   return (
     <div
-      className="flex cursor-pointer flex-col gap-1 text-center"
+      className="flex w-[30px] cursor-pointer flex-col gap-1 text-center"
       onClick={() =>
         isPending
           ? true // do nothing

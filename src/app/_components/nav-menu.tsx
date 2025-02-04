@@ -37,7 +37,7 @@ export const NavMenu = () => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {biz?.id && (
+        {biz?.id ? (
           <>
             <DropdownMenuItem
               className="cursor-pointer"
@@ -52,6 +52,16 @@ export const NavMenu = () => {
               Edit My Business
             </DropdownMenuItem>
           </>
+        ) : (
+          <DropdownMenuItem className="cursor-pointer">
+            <a
+              href="https://go.gov.sg/onboard-hoodgoods"
+              className="text-black"
+              target="_blank"
+            >
+              Apply to list business
+            </a>
+          </DropdownMenuItem>
         )}
 
         <DropdownMenuItem

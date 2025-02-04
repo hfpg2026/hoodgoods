@@ -4,7 +4,7 @@ export const Link = ({ href }: { href: string }) => {
     if (url.hostname === 'instagram.com') {
       const username = url.pathname.split('/').pop() // 'instagram.com/username'
       return (
-        <a href={href} className="hover:underline">
+        <a target="_blank" href={href}>
           📷 @{username}
         </a>
       )
@@ -15,14 +15,14 @@ export const Link = ({ href }: { href: string }) => {
       (url.hostname === 'google.com' && url.pathname.startsWith('/maps'))
     ) {
       return (
-        <a href={href} className="hover:underline">
+        <a target="_blank" href={href}>
           📍 See on Map
         </a>
       )
     }
 
     return (
-      <a href={href} className="hover:underline">
+      <a target="_blank" href={href}>
         🔗 {href}
       </a>
     )

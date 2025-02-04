@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation'
 import { Navbar } from '@/app/_components/navbar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/hooks/use-toast'
 import { useSession } from 'next-auth/react'
 
 export default function Code() {
   const router = useRouter()
+  const { toast } = useToast()
 
   const session = useSession()
   if (session.status !== 'authenticated') return <></>
@@ -36,12 +38,21 @@ export default function Code() {
           <div className="flex justify-center gap-2">
             <Input readOnly value={session.data.user.passphrase} />
             <Button
-              onClick={() =>
-                navigator.clipboard.writeText(session.data.user.passphrase)
-              }
+              onClick={async () => {
+                await navigator.clipboard.writeText(
+                  session.data.user.passphrase,
+                )
+                toast({ description: 'Copied to clipboard' })
+              }}
             >
               💾 Copy
             </Button>
+          </div>
+          <div>
+            If you&apos;re a hustler with your own business, please{' '}
+            <a target="_blank" href="https://go.gov.sg/onboard-hoodgoods">
+              apply for a listing here!
+            </a>
           </div>
           <Button variant="ghost" onClick={() => router.push('/')}>
             🏠 Back to Home

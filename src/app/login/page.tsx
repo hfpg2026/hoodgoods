@@ -12,7 +12,7 @@ export default function Login() {
   const router = useRouter()
   const [passphrase, setPassphrase] = useState('')
   return (
-    <main className="flex min-h-screen w-full flex-col gap-6 bg-background pt-24">
+    <main className="flex min-h-screen w-full flex-col gap-6 bg-background pt-12">
       <div className="flex w-full place-content-center">
         <Image
           src="/assets/logo-rainbow.svg"
@@ -25,7 +25,11 @@ export default function Login() {
       </div>
 
       <div className="flex w-full place-content-center">
-        <div className="flex flex-col gap-2 sm:w-9/12 md:w-6/12">
+        <div className="flex flex-col gap-2 px-4 sm:w-9/12 md:w-6/12">
+          <div className="mb-4 text-center">
+            Welcome to HoodGoods! An account is needed if you would like to save
+            businessess, or list your own business.
+          </div>
           <Label>Secret Code</Label>
           <Input
             value={passphrase}
