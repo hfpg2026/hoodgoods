@@ -101,7 +101,7 @@ export const BizProfilePage = ({
               <ProfileImages isEdit={isEdit} biz={biz} setValue={setValue} />
 
               {/* name & description */}
-              <div className="flex w-full grow flex-col gap-3">
+              <div className="flex w-full grow flex-col gap-8">
                 <div className="flex w-full">
                   <div className="flex w-full grow flex-col gap-3">
                     <NameField
@@ -146,7 +146,7 @@ export const BizProfilePage = ({
               </div>
             </div>
             {/* tabs */}
-            <Tabs defaultValue="highlights" className="w-full">
+            <Tabs defaultValue="highlights" className="mx-4 w-full">
               <TabsList className="w-full bg-accent text-accent-foreground">
                 {/*  eslint-disable-next-line  */}
                 {(isEdit || biz.story) && (

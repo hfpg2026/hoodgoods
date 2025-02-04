@@ -147,7 +147,7 @@ export const PostalCodeField = ({
       )}
     />
   ) : nearestMrt && nearestMrtDistance ? (
-    <div className="pt-2 text-sm">
+    <div className="text-sm">
       📍{' '}
       {Number(nearestMrtDistance) < 1000
         ? Number(nearestMrtDistance).toFixed(0) + 'm'
