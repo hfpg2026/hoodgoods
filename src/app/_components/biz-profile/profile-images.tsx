@@ -79,7 +79,6 @@ export const ProfileImages = ({
       {/* eslint-disable-next-line */}
       {(isEdit || images[0]) && (
         <div className="h-auto w-72">
-          {!isEdit && !images[0] && <div>No images found</div>}
           {images[0] && (
             <ImageDisplay
               key={images[0]}

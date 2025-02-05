@@ -44,7 +44,7 @@ export const ProductCard = ({
 
   return (
     <div className="flex h-full flex-col gap-2 rounded-lg bg-accent shadow-md">
-      <div className="grow-1 h-[250px] w-full self-center">
+      <div className="h-[250px] w-full self-center">
         {imageSrc ? (
           <picture className="h-full w-full">
             <img
@@ -63,9 +63,11 @@ export const ProductCard = ({
           />
         )}
       </div>
-      <div className="flex grow-0 flex-col gap-2 px-4 pb-4">
-        <div>{product.name}</div>
-        <div className="italic">{product.description}</div>
+      <div className="flex h-full flex-col justify-between gap-3 px-4 pb-4">
+        <div className="flex-col gap-2">
+          <div className="font-bold">{product.name}</div>
+          <div className="italic">{product.description}</div>
+        </div>
         {isEdit && (
           <Dialog>
             <DialogTrigger asChild>
