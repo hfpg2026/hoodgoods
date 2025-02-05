@@ -149,7 +149,7 @@ export const BizProfilePage = ({
               </div>
             </div>
             {/* tabs */}
-            <Tabs defaultValue="highlights" className="mx-4 w-full">
+            <Tabs defaultValue="highlights" className="w-full px-4">
               <TabsList className="w-full bg-accent text-accent-foreground">
                 {/*  eslint-disable-next-line  */}
                 {(isEdit || biz.story) && (
