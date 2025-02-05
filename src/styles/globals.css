@@ -70,6 +70,19 @@
     text-decoration: underline;
   }
 
+  ul {
+    list-style-type: circle;
+    list-style-position: outside;
+    padding-inline-start: 20px;
+  }
+  li {
+    padding-left: 1em;
+  }
+
+  p {
+    line-height: 1.75rem;
+  }
+
   .inputfile {
     width: 0.1px;
     height: 0.1px;

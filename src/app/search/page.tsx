@@ -6,7 +6,7 @@ import { api } from '@/trpc/react'
 
 import { BusinessCardGrid } from '../_components/business-card'
 import { Navbar } from '../_components/navbar'
-import { BusinessPagination } from '../_components/pagination'
+import { BusinessPagination } from '../_components/search/pagination'
 import { SearchSidebar } from '../_components/search/sidebar'
 
 export default function Search() {

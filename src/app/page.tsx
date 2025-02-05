@@ -2,11 +2,11 @@ import Image from 'next/image'
 import { api, HydrateClient } from '@/trpc/server'
 
 import { BusinessCardGrid } from './_components/business-card'
+import { Footer } from './_components/footer'
 import { NavMenu } from './_components/nav-menu'
 import { Searchbar } from './_components/searchbar'
 import { Tag } from './_components/tag'
 
-// TODO fetch from db
 export default async function Home() {
   const tags = await api.tag.findAll({ type: 'category' })
   const { businesses } = await api.business.find({
@@ -17,7 +17,7 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <main className="flex min-h-screen w-full flex-col gap-2 bg-background px-2 pb-6 pt-3">
+      <main className="flex h-full min-h-screen w-full flex-col gap-2 bg-background px-2 pb-6 pt-3">
         <div className="flex w-full items-center justify-end px-6">
           <NavMenu />
         </div>
@@ -52,6 +52,7 @@ export default async function Home() {
           </div>
         </div>
       </main>
+      <Footer />
     </HydrateClient>
   )
 }
