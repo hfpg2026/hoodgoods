@@ -53,7 +53,7 @@ export const ProfileImages = ({
     <div className="flex gap-2">
       <div className="flex flex-col gap-2">
         {images.slice(1).map((id, idx) => (
-          <Suspense fallback={<Skeleton className="h-16 w-16" />}>
+          <Suspense fallback={<Skeleton className="h-16 w-16" key={id} />}>
             <ImageDisplay
               key={id}
               inputId={`img-${idx + 1}-replace`}
@@ -83,7 +83,10 @@ export const ProfileImages = ({
       {(isEdit || images[0]) && (
         <div className="h-auto w-72">
           {images[0] && (
-            <Suspense fallback={<Skeleton className="h-72 w-72" />}>
+            <Suspense
+              fallback={<Skeleton className="h-72 w-72" />}
+              key={images[0]}
+            >
               <ImageDisplay
                 key={images[0]}
                 inputId="img-0-replace"
