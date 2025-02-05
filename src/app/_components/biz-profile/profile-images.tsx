@@ -94,8 +94,8 @@ export const ProfileImages = ({
                 bizId={biz.id}
                 initialUploadId={images[0]}
                 onUpload={(id) => onUpload(id, 0)}
-                className="h-72 w-72"
-                replacePosition="bottom-[-50px]"
+                className="h-[21rem] w-72"
+                replacePosition="bottom-0"
               />
             </Suspense>
           )}
@@ -144,12 +144,12 @@ const ImageDisplay = ({
   return (
     <div
       className={cn(
-        'group relative flex cursor-pointer flex-col place-content-center gap-2',
+        'group relative flex cursor-pointer flex-col gap-2',
         className,
       )}
       onClick={onClick}
     >
-      <div className="relative h-full w-full place-content-center">
+      <div className="relative h-full max-h-72 w-full place-content-center">
         <picture>
           <img
             src={imageSrc.url}
@@ -162,7 +162,7 @@ const ImageDisplay = ({
         <div className={cn('absolute', replacePosition ?? 'left-[-75px]')}>
           <UploadButton
             inputId={inputId}
-            className="hidden h-10 w-auto cursor-pointer place-content-center rounded-md bg-primary px-2 text-center text-primary-foreground group-hover:block"
+            className="hidden h-10 w-auto cursor-pointer place-content-center rounded-md bg-primary px-2 text-center text-primary-foreground group-hover:block group-active:block"
             bizId={bizId}
             text="Replace"
             onUpload={(newId) => {

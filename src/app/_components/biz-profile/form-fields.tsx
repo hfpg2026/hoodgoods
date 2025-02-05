@@ -235,7 +235,7 @@ export const LinkField = ({
     setValue('links', linksArr)
   }
   return (
-    <div className="align-center flex gap-3">
+    <div className="flex items-center gap-3">
       {values.map((l, idx) => (
         <Link key={idx} href={l} />
       ))}
