@@ -50,6 +50,7 @@ export const BizProfilePage = ({
       tags: biz.tagsToBusinesses.map((ttb) => ttb.tag.id),
       postalCode: biz.postalCode ?? undefined,
       images: biz.businessImages.map((bi) => bi.uploadId),
+      products: biz.products,
     },
   })
   const { control, watch, getValues, setValue } = form
@@ -78,7 +79,7 @@ export const BizProfilePage = ({
       <Form {...form}>
         {isEdit && (
           <div className="flex w-full justify-between bg-accent px-4 py-1">
-            <div className="align-center">
+            <div className="self-center">
               ✏️ You&apos;re currently editing this business page.
             </div>
             <div className="flex items-center gap-2">

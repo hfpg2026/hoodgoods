@@ -233,18 +233,18 @@ export const LinkField = ({
     setValue('links', linksArr)
   }
   return (
-    <div className="flex gap-3">
+    <div className="align-center flex gap-3">
       {values.map((l, idx) => (
         <Link key={idx} href={l} />
       ))}
       {isEdit && (
         <Dialog>
           <DialogTrigger asChild>
-            <Button>🔗 Add / Edit Links</Button>
+            <Button>Add / Edit Links</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add / Edit Links</DialogTitle>
+              <DialogTitle>🔗 Add / Edit Links</DialogTitle>
               <DialogDescription>
                 Please enter all links that you would like displayed on your
                 business page. Multiple links can be separated by &apos;,&apos;.
@@ -301,18 +301,18 @@ export const TagsField = ({
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="align-center flex gap-2">
       {values.map(
         (t) => tagById[t]?.[0] && <Tag key={t} tag={tagById[t]?.[0]} />,
       )}
       {isEdit && (
         <Dialog>
           <DialogTrigger asChild>
-            <Button>🏷️ Add / Edit Tags</Button>
+            <Button>Add / Edit Tags</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add / Edit Tags</DialogTitle>
+              <DialogTitle>🏷️ Add / Edit Tags</DialogTitle>
               <DialogDescription>
                 Please select all tags that you would like to attribute to your
                 business.

@@ -44,7 +44,7 @@ export const ProductCard = ({
 
   return (
     <div className="flex h-full flex-col gap-2 rounded-lg bg-accent shadow-md">
-      <div className="grow-1 w-full self-center">
+      <div className="grow-1 h-[250px] w-full self-center">
         {imageSrc ? (
           <picture className="h-full w-full">
             <img
@@ -214,7 +214,7 @@ const ImageUpload = ({
   return (
     <>
       {imageSrc && (
-        <div className="h-auto w-full">
+        <div className="h-[250px] w-full">
           <picture className="h-full w-full">
             <img
               src={imageSrc.url}
