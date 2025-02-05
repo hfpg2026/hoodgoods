@@ -222,9 +222,9 @@ const ImageUpload = ({
 
   return (
     <>
-      {imageSrc && (
+      {imageSrc ? (
         <div className="h-[250px] w-full">
-          <picture className="h-full w-full">
+          <picture>
             <img
               src={imageSrc.url}
               className="h-full w-full object-cover"
@@ -232,9 +232,10 @@ const ImageUpload = ({
             />
           </picture>
         </div>
-      )}
-      {uploadId && !imageSrc && (
-        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+      ) : uploadId ? (
+        <Skeleton className="h-[250px] w-full rounded-xl" />
+      ) : (
+        <></>
       )}
       <UploadButton
         inputId="product-img"

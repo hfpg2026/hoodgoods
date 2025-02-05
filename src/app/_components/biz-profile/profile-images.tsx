@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { Suspense, useCallback, useState } from 'react'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import {
   type BizUpdateType,
@@ -52,18 +53,20 @@ export const ProfileImages = ({
     <div className="flex gap-2">
       <div className="flex flex-col gap-2">
         {images.slice(1).map((id, idx) => (
-          <ImageDisplay
-            key={id}
-            inputId={`img-${idx + 1}-replace`}
-            isEdit={isEdit ?? false}
-            bizId={biz.id}
-            onClick={isEdit ? undefined : () => swapBigImage(idx + 1)}
-            initialUploadId={id}
-            onUpload={(id) => {
-              onUpload(id, idx + 1)
-            }}
-            className="h-16 w-16"
-          />
+          <Suspense fallback={<Skeleton className="h-16 w-16" />}>
+            <ImageDisplay
+              key={id}
+              inputId={`img-${idx + 1}-replace`}
+              isEdit={isEdit ?? false}
+              bizId={biz.id}
+              onClick={isEdit ? undefined : () => swapBigImage(idx + 1)}
+              initialUploadId={id}
+              onUpload={(id) => {
+                onUpload(id, idx + 1)
+              }}
+              className="h-16 w-16"
+            />
+          </Suspense>
         ))}
         {/* arbitary limit for no. of uploaded images */}
         {isEdit && images.length < 5 && images.length > 0 && (
@@ -80,16 +83,18 @@ export const ProfileImages = ({
       {(isEdit || images[0]) && (
         <div className="h-auto w-72">
           {images[0] && (
-            <ImageDisplay
-              key={images[0]}
-              inputId="img-0-replace"
-              isEdit={isEdit ?? false}
-              bizId={biz.id}
-              initialUploadId={images[0]}
-              onUpload={(id) => onUpload(id, 0)}
-              className="h-72 w-72"
-              replacePosition="bottom-[-25px] mx-auto"
-            />
+            <Suspense fallback={<Skeleton className="h-72 w-72" />}>
+              <ImageDisplay
+                key={images[0]}
+                inputId="img-0-replace"
+                isEdit={isEdit ?? false}
+                bizId={biz.id}
+                initialUploadId={images[0]}
+                onUpload={(id) => onUpload(id, 0)}
+                className="h-72 w-72"
+                replacePosition="bottom-[-50px]"
+              />
+            </Suspense>
           )}
           {isEdit && !images[0] && (
             <UploadButton
@@ -142,7 +147,7 @@ const ImageDisplay = ({
       onClick={onClick}
     >
       <div className="relative h-full w-full place-content-center">
-        <picture className="h-full w-full">
+        <picture>
           <img
             src={imageSrc.url}
             className="h-full w-full object-cover"
