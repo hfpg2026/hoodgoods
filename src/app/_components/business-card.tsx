@@ -19,17 +19,18 @@ const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
     nearestMrtDistance,
   } = biz
   const router = useRouter()
+  const uploadId = businessImages?.[0]?.uploadId
   const { data: imageSrc } = api.upload.get.useQuery(
     {
-      id: businessImages?.[0]?.uploadId ?? 0, // should not run
+      id: uploadId ?? 0, // should not run
       businessId: id ?? 0,
     },
-    { enabled: !!businessImages?.[0]?.uploadId && !!id },
+    { enabled: !!uploadId && !!id },
   )
 
   return (
     <div
-      className="align-center flex w-full cursor-pointer flex-col gap-4 rounded-lg bg-accent shadow-md"
+      className="align-center flex w-full cursor-pointer flex-col gap-2 rounded-lg bg-accent shadow-md"
       onClick={() => router.push(`/biz/${id}`)}
     >
       {imageSrc?.url ? (
@@ -37,15 +38,17 @@ const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
           <img
             src={imageSrc.url}
             alt={name}
-            className="min-h-[150px] object-cover"
+            className="h-[250px] w-full rounded-t-lg object-cover"
           />
         </picture>
+      ) : !!uploadId ? (
+        <Skeleton className="h-[250px] w-full" />
       ) : (
         <div className="self-center pt-3">
           <Image
             src="/assets/paperbag.svg"
-            height={100}
-            width={100}
+            height={200}
+            width={190}
             alt={name ?? ''}
           />
         </div>
