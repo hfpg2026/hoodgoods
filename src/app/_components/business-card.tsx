@@ -1,13 +1,15 @@
 'use client'
 
+import { Suspense } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { Skeleton } from '@/components/ui/skeleton'
 import { type Business } from '@/server/api/routers/business'
 import { api } from '@/trpc/react'
 
 import { toTitleCase } from './utils/str'
 
-export const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
+const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
   const {
     id,
     businessImages,
@@ -17,17 +19,18 @@ export const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
     nearestMrtDistance,
   } = biz
   const router = useRouter()
+  const uploadId = businessImages?.[0]?.uploadId
   const { data: imageSrc } = api.upload.get.useQuery(
     {
-      id: businessImages?.[0]?.uploadId ?? 0, // should not run
+      id: uploadId ?? 0, // should not run
       businessId: id ?? 0,
     },
-    { enabled: !!businessImages?.[0]?.uploadId && !!id },
+    { enabled: !!uploadId && !!id },
   )
 
   return (
     <div
-      className="align-center flex cursor-pointer flex-col gap-4 rounded-lg bg-accent shadow-md"
+      className="align-center flex w-full cursor-pointer flex-col gap-2 rounded-lg bg-accent shadow-md"
       onClick={() => router.push(`/biz/${id}`)}
     >
       {imageSrc?.url ? (
@@ -35,15 +38,17 @@ export const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
           <img
             src={imageSrc.url}
             alt={name}
-            className="min-h-[150px] object-cover"
+            className="h-[250px] w-full rounded-t-lg object-cover"
           />
         </picture>
+      ) : !!uploadId ? (
+        <Skeleton className="h-[250px] w-full" />
       ) : (
         <div className="self-center pt-3">
           <Image
             src="/assets/paperbag.svg"
-            height={100}
-            width={100}
+            height={200}
+            width={190}
             alt={name ?? ''}
           />
         </div>
@@ -65,5 +70,49 @@ export const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
         )}
       </div>
     </div>
+  )
+}
+
+const BusinessCardGridLoader = () => {
+  return (
+    <div className="grid h-fit grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="flex flex-col space-y-3 shadow-md">
+        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+      <div className="flex flex-col space-y-3">
+        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+      <div className="flex flex-col space-y-3">
+        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export const BusinessCardGrid = ({
+  businesses,
+}: {
+  businesses: Business[]
+}) => {
+  return (
+    <Suspense fallback={<BusinessCardGridLoader />}>
+      <div className="grid h-fit w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {businesses.map((b) => (
+          <BusinessCard key={b.id} biz={b} />
+        ))}
+      </div>
+    </Suspense>
   )
 }

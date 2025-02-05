@@ -1,3 +1,5 @@
+'use client'
+
 import { useCallback, useState } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -20,6 +22,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { type Product } from '@/server/api/routers/business'
 import { api } from '@/trpc/react'
@@ -44,15 +47,17 @@ export const ProductCard = ({
 
   return (
     <div className="flex h-full flex-col gap-2 rounded-lg bg-accent shadow-md">
-      <div className="grow-1 self-center">
+      <div className="h-[250px] w-full self-center">
         {imageSrc ? (
           <picture>
             <img
               src={imageSrc.url}
-              className="object-cover"
+              className="h-full w-full rounded-t-lg object-cover"
               alt={imageSrc.name}
             />
           </picture>
+        ) : product.imageId ? (
+          <Skeleton className="h-[250px] w-full rounded-lg" />
         ) : (
           <Image
             src="/assets/paperbag.svg"
@@ -63,9 +68,13 @@ export const ProductCard = ({
           />
         )}
       </div>
-      <div className="flex grow-0 flex-col gap-2 px-4 pb-4">
-        <div>{product.name}</div>
-        <div className="italic">{product.description}</div>
+      <div className="flex h-full flex-col justify-between gap-3 px-4 pb-4">
+        <div className="flex-col gap-2">
+          <div className="font-bold">{product.name}</div>
+          <div className="whitespace-pre-line italic">
+            {product.description}
+          </div>
+        </div>
         {isEdit && (
           <Dialog>
             <DialogTrigger asChild>
@@ -213,16 +222,20 @@ const ImageUpload = ({
 
   return (
     <>
-      {imageSrc && (
-        <div className="h-auto w-full">
+      {imageSrc ? (
+        <div className="h-[250px] w-full">
           <picture>
             <img
               src={imageSrc.url}
-              className="object-cover"
+              className="h-full w-full object-cover"
               alt={imageSrc.name}
             />
           </picture>
         </div>
+      ) : uploadId ? (
+        <Skeleton className="h-[250px] w-full rounded-xl" />
+      ) : (
+        <></>
       )}
       <UploadButton
         inputId="product-img"

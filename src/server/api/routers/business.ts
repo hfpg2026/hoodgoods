@@ -131,6 +131,7 @@ export const businessRouter = createTRPCRouter({
         await tx
           .update(businesses)
           .set({
+            isPublished: input.isPublished,
             name: input.name,
             description: input.description,
             story: input.story,
