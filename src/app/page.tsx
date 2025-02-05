@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { api, HydrateClient } from '@/trpc/server'
 
-import { BusinessCard } from './_components/business-card'
+import { BusinessCardGrid } from './_components/business-card'
 import { NavMenu } from './_components/nav-menu'
 import { Searchbar } from './_components/searchbar'
 import { Tag } from './_components/tag'
@@ -48,11 +48,7 @@ export default async function Home() {
         <div className="flex w-full place-content-center pt-4">
           <div className="flex w-full flex-col gap-4 md:w-9/12">
             <div className="text-lg font-bold">💖 New Kids on the Block</div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {businesses.map((b) => (
-                <BusinessCard key={b.id} biz={b} />
-              ))}
-            </div>
+            <BusinessCardGrid businesses={businesses} />
           </div>
         </div>
       </main>

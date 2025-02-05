@@ -44,12 +44,12 @@ export const ProductCard = ({
 
   return (
     <div className="flex h-full flex-col gap-2 rounded-lg bg-accent shadow-md">
-      <div className="grow-1 self-center">
+      <div className="grow-1 w-full self-center">
         {imageSrc ? (
-          <picture>
+          <picture className="h-full w-full">
             <img
               src={imageSrc.url}
-              className="object-cover"
+              className="h-full w-full object-cover"
               alt={imageSrc.name}
             />
           </picture>
@@ -215,10 +215,10 @@ const ImageUpload = ({
     <>
       {imageSrc && (
         <div className="h-auto w-full">
-          <picture>
+          <picture className="h-full w-full">
             <img
               src={imageSrc.url}
-              className="object-cover"
+              className="h-full w-full object-cover"
               alt={imageSrc.name}
             />
           </picture>

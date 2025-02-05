@@ -374,7 +374,7 @@ export const ProductsField = ({
 
   if (!isEdit && products.length === 0) {
     return (
-      <div className="w-full text-center">
+      <div key={0} className="w-full text-center">
         Oops, this business hasn&apos;t listed any products yet!
       </div>
     )

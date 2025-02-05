@@ -143,10 +143,10 @@ const ImageDisplay = ({
       onClick={onClick}
     >
       <div className="relative h-full w-full place-content-center">
-        <picture>
+        <picture className="h-full w-full">
           <img
             src={imageSrc.url}
-            className="object-cover"
+            className="h-full w-full object-cover"
             alt={imageSrc.name}
           />
         </picture>

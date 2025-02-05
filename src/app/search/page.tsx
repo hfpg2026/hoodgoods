@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { api } from '@/trpc/react'
 
-import { BusinessCard } from '../_components/business-card'
+import { BusinessCardGrid } from '../_components/business-card'
 import { Navbar } from '../_components/navbar'
 import { BusinessPagination } from '../_components/pagination'
 import { SearchSidebar } from '../_components/search/sidebar'
@@ -43,11 +43,7 @@ export default function Search() {
             </div>
           </div>
         ) : (
-          <div className="grid w-full grid-cols-1 gap-4 px-4 sm:grid-cols-2 lg:grid-cols-3">
-            {businesses.map((b) => (
-              <BusinessCard key={b.id} biz={b} />
-            ))}
-          </div>
+          <BusinessCardGrid businesses={businesses} />
         )}
       </div>
 

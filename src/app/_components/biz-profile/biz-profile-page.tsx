@@ -77,8 +77,10 @@ export const BizProfilePage = ({
       <Navbar showSearch={!isEdit} />
       <Form {...form}>
         {isEdit && (
-          <div className="flex w-full justify-between px-4">
-            <div>✏️ You&apos;re currently editing this business page.</div>
+          <div className="flex w-full justify-between bg-accent px-4 py-1">
+            <div className="align-center">
+              ✏️ You&apos;re currently editing this business page.
+            </div>
             <div className="flex items-center gap-2">
               <PublishedField control={control} />
               <Button className="ml-2" onClick={onSubmit}>

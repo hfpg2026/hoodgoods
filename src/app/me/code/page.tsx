@@ -35,6 +35,7 @@ export default function Code() {
             Hi there! This is the <b>secret code</b> you can use to log back
             into Hood Goods. Please save it somewhere safe.
           </div>
+
           <div className="flex justify-center gap-2">
             <Input readOnly value={session.data.user.passphrase} />
             <Button
@@ -48,8 +49,8 @@ export default function Code() {
               💾 Copy
             </Button>
           </div>
-          <div>
-            If you&apos;re a hustler with your own business, please{' '}
+          <div className="w-full rounded-sm bg-accent p-2">
+            <b>ⓘ</b> If you&apos;re a hustler with your own business, please{' '}
             <a target="_blank" href="https://go.gov.sg/onboard-hoodgoods">
               apply for a listing here!
             </a>
