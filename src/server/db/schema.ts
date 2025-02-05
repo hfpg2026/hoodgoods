@@ -5,6 +5,7 @@ import {
   decimal,
   index,
   integer,
+  pgEnum,
   pgTableCreator,
   primaryKey,
   text,
@@ -30,6 +31,9 @@ export const bookmarks = createTable(
       .notNull(),
     businessId: integer('business_id')
       .references(() => businesses.id)
+      .notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
   },
   (b) => [
@@ -118,9 +122,11 @@ export const productsRelations = relations(products, ({ one }) => {
 })
 
 // ----- tag -----
+export const tagType = pgEnum('type', ['category', 'tag'])
 export const tags = createTable('tag', {
   id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
   name: varchar('name', { length: 255 }).notNull(),
+  type: tagType().notNull().default('tag'),
 })
 
 export const tagsRelations = relations(tags, ({ many }) => ({

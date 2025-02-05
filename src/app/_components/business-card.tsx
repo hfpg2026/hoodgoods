@@ -49,13 +49,13 @@ export const BusinessCard = ({ biz }: { biz: Partial<Business> }) => {
         </div>
       )}
 
-      <div className="flex flex-col place-content-center justify-between gap-2 p-3">
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col place-content-center justify-between gap-3 p-3">
+        <div className="flex flex-col gap-1">
           <div className="text-lg font-bold text-primary">{name}</div>
-          <div>{description}</div>
+          <div className="italic">{description}</div>
         </div>
         {nearestMrt && nearestMrtDistance && (
-          <div className="pt-1 text-sm italic">
+          <div className="pt-1 text-sm">
             📍{' '}
             {Number(nearestMrtDistance) < 1000
               ? Number(nearestMrtDistance).toFixed(0) + 'm'

@@ -31,7 +31,7 @@ export const Searchbar = ({
         onSubmit={() => onSearch(searchTerm)}
       >
         <div className="flex w-full flex-col px-2">
-          <div className="text-xs">Find your Hood Good</div>
+          <div className="text-left text-xs">Find your Hood Good</div>
           <input
             className="h-10 w-full py-0 font-medium focus:outline-none"
             placeholder="Search Goods"
@@ -44,7 +44,7 @@ export const Searchbar = ({
         <Separator orientation="vertical" />
 
         <div className="flex w-full flex-col px-2">
-          <div className="text-xs">Where</div>
+          <div className="text-left text-xs">Where</div>
           <input
             className="h-10 w-full font-medium focus:outline-none"
             type="number"

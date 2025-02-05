@@ -5,7 +5,7 @@ import {
 } from '@/server/api/trpc'
 import { db } from '@/server/db'
 import { bookmarks } from '@/server/db/schema'
-import { and, count, eq } from 'drizzle-orm'
+import { and, count, desc, eq } from 'drizzle-orm'
 import z from 'zod'
 
 import { businessSelectSchema } from './business'
@@ -75,6 +75,7 @@ export const bookmarkRouter = createTRPCRouter({
       const bms = await ctx.db.query.bookmarks.findMany({
         where: eq(bookmarks.userId, ctx.session.user.id),
         with: { business: true },
+        orderBy: desc(bookmarks.createdAt),
       })
       return bms
     }),

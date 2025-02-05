@@ -76,30 +76,33 @@ export const ProfileImages = ({
           />
         )}
       </div>
-      <div className="h-auto w-72">
-        {!isEdit && !images[0] && <div>No images found</div>}
-        {images[0] && (
-          <ImageDisplay
-            key={images[0]}
-            inputId="img-0-replace"
-            isEdit={isEdit ?? false}
-            bizId={biz.id}
-            initialUploadId={images[0]}
-            onUpload={(id) => onUpload(id, 0)}
-            className="h-72 w-72"
-            replacePosition="bottom-[-25px] mx-auto"
-          />
-        )}
-        {isEdit && !images[0] && (
-          <UploadButton
-            inputId="img-0-upload"
-            bizId={biz.id}
-            text="+"
-            className="h-72 w-72 cursor-pointer place-content-center bg-primary text-center text-xl text-primary-foreground"
-            onUpload={(id) => onUpload(id, 0)}
-          />
-        )}
-      </div>
+      {/* eslint-disable-next-line */}
+      {(isEdit || images[0]) && (
+        <div className="h-auto w-72">
+          {!isEdit && !images[0] && <div>No images found</div>}
+          {images[0] && (
+            <ImageDisplay
+              key={images[0]}
+              inputId="img-0-replace"
+              isEdit={isEdit ?? false}
+              bizId={biz.id}
+              initialUploadId={images[0]}
+              onUpload={(id) => onUpload(id, 0)}
+              className="h-72 w-72"
+              replacePosition="bottom-[-25px] mx-auto"
+            />
+          )}
+          {isEdit && !images[0] && (
+            <UploadButton
+              inputId="img-0-upload"
+              bizId={biz.id}
+              text="+"
+              className="h-72 w-72 cursor-pointer place-content-center bg-primary text-center text-xl text-primary-foreground"
+              onUpload={(id) => onUpload(id, 0)}
+            />
+          )}
+        </div>
+      )}
     </div>
   )
 }
