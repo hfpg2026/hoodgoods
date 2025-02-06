@@ -225,7 +225,7 @@ export const LinkField = ({
         let url: URL
         try {
           url = new URL(l.trim())
-        } catch (e) {
+        } catch {
           // try inputting https:// infront
           url = new URL(`//${l.trim()}`, 'https://hoodgoods.hack2025.gov.sg')
         }
@@ -364,12 +364,14 @@ export const ProductsField = ({
   }
   const onProductUpdate = (p: Product) => {
     const oldProductIndex = products.findIndex(({ id }) => id === p.id)
-    const newProducts = products
-      .slice(0, oldProductIndex)
-      .concat(p)
-      .concat(products.slice(oldProductIndex + 1))
-    setProducts(newProducts)
-    setValue('products', newProducts)
+    if (oldProductIndex > -1) {
+      const newProducts = products
+        .slice(0, oldProductIndex)
+        .concat(p)
+        .concat(products.slice(oldProductIndex + 1))
+      setProducts(newProducts)
+      setValue('products', newProducts)
+    }
   }
   const onProductDelete = (pid: number) => {
     const newProducts = products.filter((p) => p.id !== pid)

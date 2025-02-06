@@ -131,7 +131,7 @@ export const EditProductCardDialogContent = ({
       onProductAdd?.(values)
       form.reset()
     } else {
-      onProductUpdate?.(values)
+      onProductUpdate?.({ id: product.id!, ...values })
     }
   }
   const onDelete = () => {
