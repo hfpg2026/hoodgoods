@@ -10,6 +10,24 @@ export const Link = ({ href }: { href: string }) => {
       )
     }
 
+    if (url.hostname === 'take.app') {
+      const username = url.pathname.split('/').pop() // 'tiktok.com/@username'
+      return (
+        <a href={href} className="hover:underline">
+          📹 {username}
+        </a>
+      )
+    }
+
+    if (url.hostname === 'tiktok.com') {
+      const username = url.pathname.split('/').pop() // 'tiktok.com/@username'
+      return (
+        <a href={href} className="hover:underline">
+          📹 {username}
+        </a>
+      )
+    }
+
     if (
       url.hostname === 'g.co' ||
       (url.hostname === 'google.com' && url.pathname.startsWith('/maps'))
