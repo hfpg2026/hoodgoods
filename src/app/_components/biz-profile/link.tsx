@@ -11,10 +11,10 @@ export const Link = ({ href }: { href: string }) => {
     }
 
     if (url.hostname === 'take.app') {
-      const username = url.pathname.split('/').pop() // 'tiktok.com/@username'
+      const username = url.pathname.split('/').pop() // 'take.app/username'
       return (
         <a href={href} className="hover:underline">
-          📹 {username}
+          🛒 {username}
         </a>
       )
     }
