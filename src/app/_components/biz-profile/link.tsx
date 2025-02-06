@@ -13,7 +13,7 @@ export const Link = ({ href }: { href: string }) => {
     if (url.hostname === 'take.app') {
       const username = url.pathname.split('/').pop() // 'take.app/username'
       return (
-        <a href={href} className="hover:underline">
+        <a target="_blank" href={href} className="hover:underline">
           🛒 {username}
         </a>
       )
@@ -22,7 +22,7 @@ export const Link = ({ href }: { href: string }) => {
     if (url.hostname === 'tiktok.com') {
       const username = url.pathname.split('/').pop() // 'tiktok.com/@username'
       return (
-        <a href={href} className="hover:underline">
+        <a target="_blank" href={href} className="hover:underline">
           📹 {username}
         </a>
       )
