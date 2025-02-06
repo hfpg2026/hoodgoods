@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -391,7 +391,14 @@ export const ProductsField = ({
       className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
     >
       {products.map((p) => (
-        <ProductCard key={p.id} {...p} bizId={bizId} isEdit={isEdit} />
+        <ProductCard
+          key={p.id}
+          {...p}
+          bizId={bizId}
+          isEdit={isEdit}
+          onProductUpdate={onProductUpdate}
+          onProductDelete={onProductDelete}
+        />
       ))}
 
       {isEdit && (
@@ -402,8 +409,6 @@ export const ProductsField = ({
           <EditProductCardDialogContent
             bizId={bizId}
             onProductAdd={onProductAdd}
-            onProductUpdate={onProductUpdate}
-            onProductDelete={onProductDelete}
           />
         </Dialog>
       )}
