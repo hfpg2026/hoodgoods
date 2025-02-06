@@ -114,7 +114,7 @@ export const EditProductCardDialogContent = ({
   })
   const { control, setValue, getValues } = form
 
-  const onSave = useCallback(async () => {
+  const onSave = async () => {
     const values = getValues()
     if (!product) {
       onProductAdd?.(values)
@@ -122,15 +122,15 @@ export const EditProductCardDialogContent = ({
     } else {
       onProductUpdate?.(values)
     }
-  }, [getValues, onProductUpdate, onProductAdd, product, form])
-  const onDelete = useCallback(() => {
+  }
+  const onDelete = () => {
     if (!product) {
       // do nothing
     } else {
       onProductDelete?.(product.id!)
     }
     form.reset()
-  }, [onProductDelete, product, form])
+  }
 
   return (
     <DialogContent>
