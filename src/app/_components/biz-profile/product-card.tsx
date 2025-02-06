@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import {
@@ -33,8 +33,15 @@ import { UploadButton } from './upload-button'
 export const ProductCard = ({
   isEdit,
   bizId,
+  onProductUpdate,
+  onProductDelete,
   ...originalProduct
-}: Product & { isEdit?: boolean; bizId: number }) => {
+}: Product & {
+  isEdit?: boolean
+  bizId: number
+  onProductUpdate: (p: Product) => void
+  onProductDelete: (pId: number) => void
+}) => {
   const [product, setProduct] = useState(originalProduct)
 
   const { data: imageSrc } = api.upload.get.useQuery(
@@ -83,7 +90,11 @@ export const ProductCard = ({
             <EditProductCardDialogContent
               bizId={bizId}
               product={product}
-              onProductUpdate={setProduct}
+              onProductUpdate={(p: Product) => {
+                setProduct(p)
+                onProductUpdate(p)
+              }}
+              onProductDelete={onProductDelete}
             />
           </Dialog>
         )}
