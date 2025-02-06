@@ -365,6 +365,18 @@ export const ProductsField = ({
     },
     [products, setValue],
   )
+  const onProductUpdate = useCallback(
+    (p: Product) => {
+      const oldProductIndex = products.findIndex(({ id }) => id === p.id)
+      const newProducts = products
+        .slice(0, oldProductIndex)
+        .concat(p)
+        .concat(products.slice(oldProductIndex + 1))
+      setProducts(newProducts)
+      setValue('products', newProducts)
+    },
+    [products, setValue],
+  )
   const onProductDelete = useCallback(
     (pid: number) => {
       const newProducts = products.filter((p) => p.id !== pid)
@@ -399,6 +411,7 @@ export const ProductsField = ({
           <EditProductCardDialogContent
             bizId={bizId}
             onProductAdd={onProductAdd}
+            onProductUpdate={onProductUpdate}
             onProductDelete={onProductDelete}
           />
         </Dialog>
