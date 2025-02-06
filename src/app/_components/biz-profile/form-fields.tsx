@@ -357,34 +357,25 @@ export const ProductsField = ({
   setValue: UseFormSetValue<BizUpdateType>
 }) => {
   const [products, setProducts] = useState(originalProducts)
-  const onProductAdd = useCallback(
-    (p: Product) => {
-      const newProducts = [...products, p]
-      setProducts(newProducts)
-      setValue('products', newProducts)
-    },
-    [products, setValue],
-  )
-  const onProductUpdate = useCallback(
-    (p: Product) => {
-      const oldProductIndex = products.findIndex(({ id }) => id === p.id)
-      const newProducts = products
-        .slice(0, oldProductIndex)
-        .concat(p)
-        .concat(products.slice(oldProductIndex + 1))
-      setProducts(newProducts)
-      setValue('products', newProducts)
-    },
-    [products, setValue],
-  )
-  const onProductDelete = useCallback(
-    (pid: number) => {
-      const newProducts = products.filter((p) => p.id !== pid)
-      setProducts(newProducts)
-      setValue('products', newProducts)
-    },
-    [products, setValue],
-  )
+  const onProductAdd = (p: Product) => {
+    const newProducts = [...products, p]
+    setProducts(newProducts)
+    setValue('products', newProducts)
+  }
+  const onProductUpdate = (p: Product) => {
+    const oldProductIndex = products.findIndex(({ id }) => id === p.id)
+    const newProducts = products
+      .slice(0, oldProductIndex)
+      .concat(p)
+      .concat(products.slice(oldProductIndex + 1))
+    setProducts(newProducts)
+    setValue('products', newProducts)
+  }
+  const onProductDelete = (pid: number) => {
+    const newProducts = products.filter((p) => p.id !== pid)
+    setProducts(newProducts)
+    setValue('products', newProducts)
+  }
 
   if (!isEdit && products.length === 0) {
     return (
