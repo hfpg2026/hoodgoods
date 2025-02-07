@@ -94,7 +94,7 @@ const bizUpdateSchema = z.object({
   tags: z.number().array().default([]),
   products: productSchema.array().default([]),
   images: z.number().array().default([]),
-  postalCode: z.string().regex(/\d{6}/),
+  postalCode: z.string().regex(/\d{6}/).optional(),
 })
 export type BizUpdateType = z.infer<typeof bizUpdateSchema>
 
@@ -129,30 +129,42 @@ export const businessRouter = createTRPCRouter({
           })
         }
 
-        const { x, y } = await postalCodeToSvy21(input.postalCode)
-        const { nearestMrt, dist } = getNearestMrt({ x, y })
-        await tx
-          .update(businesses)
-          .set({
-            isPublished: input.isPublished,
-            name: input.name,
-            description: input.description,
-            story: input.story,
-            links: input.links,
-            postalCode: input.postalCode,
-            svy21X: (
-              Number(x) +
-              crypto.randomInt(-50000, 50000) / 10000
-            ).toString(),
-            svy21Y: (
-              Number(y) +
-              crypto.randomInt(-50000, 50000) / 10000
-            ).toString(),
-            nearestMrt,
-            nearestMrtDistance: dist.toFixed(3).toString(),
-          })
-          .where(eq(businesses.id, input.id))
-
+        if (input.postalCode) {
+          const { x, y } = await postalCodeToSvy21(input.postalCode)
+          const { nearestMrt, dist } = getNearestMrt({ x, y })
+          await tx
+            .update(businesses)
+            .set({
+              isPublished: input.isPublished,
+              name: input.name,
+              description: input.description,
+              story: input.story,
+              links: input.links,
+              postalCode: input.postalCode,
+              svy21X: (
+                Number(x) +
+                crypto.randomInt(-50000, 50000) / 10000
+              ).toString(),
+              svy21Y: (
+                Number(y) +
+                crypto.randomInt(-50000, 50000) / 10000
+              ).toString(),
+              nearestMrt,
+              nearestMrtDistance: dist.toFixed(3).toString(),
+            })
+            .where(eq(businesses.id, input.id))
+        } else {
+          await tx
+            .update(businesses)
+            .set({
+              isPublished: input.isPublished,
+              name: input.name,
+              description: input.description,
+              story: input.story,
+              links: input.links,
+            })
+            .where(eq(businesses.id, input.id))
+        }
         // delete tags
         await tx
           .delete(tagsToBusinesses)
