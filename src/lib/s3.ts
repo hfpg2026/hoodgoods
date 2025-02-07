@@ -3,7 +3,6 @@ import {
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
-  type DeleteObjectCommandInput,
 } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
@@ -38,8 +37,13 @@ export const generatePutObjectUrl = async (key: string) => {
   )
 }
 
-export const deleteObject = async (params: DeleteObjectCommandInput) => {
-  return await s3Client.send(new DeleteObjectCommand(params))
+export const deleteObject = async (key: string) => {
+  return await s3Client.send(
+    new DeleteObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: key,
+    }),
+  )
 }
 
 export const generateS3ObjectKey = (

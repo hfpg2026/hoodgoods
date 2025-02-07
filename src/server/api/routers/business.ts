@@ -1,4 +1,5 @@
 import crypto from 'node:crypto'
+import { deleteObject } from '@/lib/s3'
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -9,6 +10,7 @@ import {
   businessImages,
   products,
   tagsToBusinesses,
+  uploads,
 } from '@/server/db/schema'
 import { TRPCError } from '@trpc/server'
 import {
@@ -20,6 +22,7 @@ import {
   getTableColumns,
   ilike,
   inArray,
+  notInArray,
   or,
   sql,
   type AnyColumn,
@@ -203,6 +206,34 @@ export const businessRouter = createTRPCRouter({
               },
             })
         }
+
+        // delete all unused uploads
+        const deletedUploads = await tx
+          .delete(uploads)
+          .where(
+            and(
+              eq(uploads.userId, ctx.session.user.id),
+              // not biz image
+              notInArray(
+                uploads.id,
+                ctx.db
+                  .select({ id: businessImages.uploadId })
+                  .from(businessImages)
+                  .where(eq(businessImages.businessId, input.id)),
+              ),
+              // not product image
+              notInArray(
+                uploads.id,
+                ctx.db
+                  .select({ id: products.imageId })
+                  .from(products)
+                  .where(eq(products.businessId, input.id)),
+              ),
+            ),
+          )
+          .returning({ key: uploads.s3ObjectKey })
+        // delete from s3
+        await Promise.all(deletedUploads.map(({ key }) => deleteObject(key)))
       })
     }),
 
