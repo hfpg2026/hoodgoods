@@ -49,7 +49,7 @@ export const SearchSidebar = ({ tags }: { tags: Tag[] }) => {
   }, [selectedTags, router, searchParams])
 
   return (
-    <div className="ml-8 flex gap-6 md:min-w-[250px] md:flex-col">
+    <div className="ml-6 flex gap-6 md:min-w-[250px] md:flex-col">
       {TAG_TYPES.map(({ name, plural }) => (
         <div key={name} className="flex w-full flex-col gap-2">
           <div className="font-bold">{plural}</div>

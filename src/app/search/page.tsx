@@ -32,7 +32,7 @@ export default function Search() {
     <main className="flex min-h-screen w-full flex-col gap-6 pb-6 pt-2">
       <Navbar initialSearch={searchTerm} initialPostalCode={postalCode} />
 
-      <div className="flex w-full flex-wrap gap-8 pt-4 md:flex-nowrap">
+      <div className="flex w-full flex-wrap gap-8 px-4 pt-4 md:flex-nowrap">
         {/* sidebar */}
         <SearchSidebar tags={allTags} />
         {/* businessess */}
